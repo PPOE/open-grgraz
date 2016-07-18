@@ -1,0 +1,7 @@
+env
+files/jsonMotionLists/*
+!files/jsonMotionLists/.gitkeep
+files/motionEmails/*
+!files/motionEmails/.gitkeep
+files/motions/*
+!files/motions/.gitkeep
