@@ -5,6 +5,11 @@ a script to parse the [City Council of Graz](http://www.graz.at/cms/beitrag/1019
 (Gemeinderat Graz) [Microsoft SharePoint](https://en.wikipedia.org/wiki/SharePoint)
 for motions and answers.
 
+ - Author: Peter Grassberger <petertheone@gmail.com>
+ - License: [MIT](https://opensource.org/licenses/MIT)
+
+![open-grgraz downloading](https://raw.github.com/PPOE/opengrgraz/master/open-grgraz.jpg "open-grgraz downloading (c) @stefan2904")
+
 script stages
 -------------
 
