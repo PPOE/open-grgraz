@@ -2,7 +2,7 @@ env
 files/*
 files/jsonMotionLists/*
 !files/jsonMotionLists/.gitkeep
-files/motionEmails/*
-!files/motionEmails/.gitkeep
+files/rawMotions/*
+!files/rawMotions/.gitkeep
 files/motions/*
 !files/motions/.gitkeep

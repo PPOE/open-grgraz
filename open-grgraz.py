@@ -1,37 +1,43 @@
+import sys
 import os
 import json
 import csv
 import requests
 from requests_ntlm import HttpNtlmAuth
 
-def createSession():
-    print('createSession')
+BASE_URL = 'https://magistrat.graz.at'
+FILES_PATH = 'files/'
+MOTION_LISTS_PATH = FILES_PATH + 'motionLists/'
+RAW_MOTIONS_PATH = FILES_PATH + 'rawMotions/'
+MOTIONS_PATH = FILES_PATH + 'motions/'
+
+
+def create_session(username, password):
     session = requests.Session()
-    session.auth = HttpNtlmAuth('\\username', 'password', session)
-    r = session.get('https://magistrat.graz.at')
-    print(r)
+    session.auth = HttpNtlmAuth('\\' + username, password)
+    result = session.get(BASE_URL)
+    if result.status_code != 200:
+        sys.exit('Login error {}.'.format(result.status_code))
     return session
 
 
-def downloadMotionLists():
+def download_motion_lists(session):
     print('downloadMotionLists')
 
 
-def parseMotionLists():
-    print('parseMotionLists')
+def parse_motion_lists():
+    json_files = os.listdir(MOTION_LISTS_PATH)
+    json_files = filter(lambda name: name.endswith('.json'), json_files)
 
-    jsonFiles = os.listdir('files/jsonMotionLists/')
-    jsonFiles = filter(lambda name: name.endswith('.json'), jsonFiles)
+    motion_lists = []
+    for file_name in json_files:
+        with open(MOTION_LISTS_PATH + file_name) as file:
+            motion_lists.append(json.load(file))
 
-    motionLists = []
-    for jsonFile in jsonFiles:
-        with open('files/jsonMotionLists/' + jsonFile) as jsonFile:
-            motionLists.append(json.load(jsonFile))
-
-    motionsCsv = []
-    for motionList in motionLists:
+    motions_csv = []
+    for motionList in motion_lists:
         for motion in motionList['Row']:
-            motionsCsv.append([
+            motions_csv.append([
                 motion['Sitzung_x0020_am'],
                 motion['ID'],
                 motion['Title'],
@@ -44,39 +50,46 @@ def parseMotionLists():
                 motion['FileLeafRef'],
             ])
 
-    # todo: fix sort
-    def customSort(motion):
+    def motion_sort(motion):
         date = motion[0].split('.')
-        return (date[2], date[2], date[1], motion[1])
+        return date[2], date[2], date[1], motion[1]
 
-    motionsCsv = sorted(motionsCsv, key=customSort)
+    motions_csv = sorted(motions_csv, key=motion_sort)
 
-    with open('files/motions.csv', 'w', newline='') as csvFile:
+    with open(FILES_PATH + 'motions.csv', 'w', newline='') as csvFile:
         writer = csv.writer(csvFile)
-        writer.writerow( ('Datum', 'Nummer', 'Titel', 'Art', 'Antragsteller', 'Partei', 'Dringlichkeit', 'Angenommen', 'Link', 'Anwort 1', 'Anwort 2', 'Antwort', 'link') )
-        writer.writerows(motionsCsv)
+        writer.writerow(('Datum', 'Nummer', 'Titel', 'Art', 'Antragsteller', 'Partei', 'Dringlichkeit', 'Angenommen', 'Link', 'Anwort 1', 'Anwort 2', 'Antwort', 'link'))
+        writer.writerows(motions_csv)
 
-    return motionsCsv
+    return motions_csv
 
 
-def downloadMotions(motionsCsv, session):
-    print('downloadMotions')
-    i = 0
-    for motion in motionsCsv:
-        url = 'https://magistrat.graz.at' + motion[8]
-        print('%4d - downloading: %s' % (i, url))
-        i += 1
+def download_motions(motions_csv, session):
+    download_number = 1
+    for motion in motions_csv:
+        url = BASE_URL + motion[8]
         local_filename = url.split('/')[-1]
-        # NOTE the stream=True parameter
-        r = session.get(url, stream=True)
-        with open('files/motions/' + local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk: # filter out keep-alive new chunks
-                    f.write(chunk)
-                    #f.flush() commented by recommendation from J.F.Sebastian
+
+        if os.path.exists(RAW_MOTIONS_PATH + local_filename):
+            continue
+
+        print('{:>4} - downloading: {}'.format(download_number, local_filename))
+        download_number += 1
+        result = session.get(url, stream=True)
+        with open(RAW_MOTIONS_PATH + local_filename, 'wb') as file:
+            for chunk in result.iter_content(chunk_size=1024):
+                if chunk:
+                    file.write(chunk)
 
 
-session = createSession()
-downloadMotionLists()
-motionsCsv = parseMotionLists()
-downloadMotions(motionsCsv, session)
+def main(username, password):
+    session = create_session(username, password)
+    download_motion_lists(session)
+    motions_csv = parse_motion_lists()
+    download_motions(motions_csv, session)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 3:
+        sys.exit('No username and password set.')
+    main(sys.argv[1], sys.argv[2])
