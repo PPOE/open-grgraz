@@ -12,4 +12,4 @@ script stages
 2. Download json motion lists to `files/jsonMotionLists` folder (wip)
 3. Parse json files create `motions.csv`
 4. Download files from `motions.csv`
-5. Parse Emails and download more files
+5. Parse Emails and download/extract more files

@@ -1,4 +1,5 @@
 env
+files/*
 files/jsonMotionLists/*
 !files/jsonMotionLists/.gitkeep
 files/motionEmails/*
