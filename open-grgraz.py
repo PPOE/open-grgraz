@@ -5,6 +5,7 @@ import csv
 import requests
 from requests_ntlm import HttpNtlmAuth
 import olefile
+from shutil import copyfile
 
 BASE_URL = 'https://magistrat.graz.at'
 FILES_PATH = 'files/'
@@ -82,14 +83,25 @@ def download_motions(motions_csv, session):
                 if chunk:
                     file.write(chunk)
 
+def copy_pdfs(motions_csv):
+    for motion in motions_csv:
+        filename = motion[9]
+
+        if filename.split('.')[-1] != 'pdf':
+            continue
+
+        source_path = RAW_MOTIONS_PATH + filename
+        destination_path = MOTIONS_PATH + filename
+        copyfile(source_path, destination_path)
+
+
+
 def extract_email_attachments(motions_csv):
     for motion in motions_csv:
         filename = motion[9]
         if filename.split('.')[-1] != 'msg':
             continue
-        print('open: ' + filename)
         file_path = RAW_MOTIONS_PATH + filename
-        #msg = email.message_from_file(open(file_path, mode='r', encoding='utf-8', errors='replace'))
 
         ole = olefile.OleFileIO(file_path)
 
@@ -140,14 +152,10 @@ def extract_email_attachments(motions_csv):
                 if attachment_filename is None:
                     attachment_filename = short_filename
 
-                #print(attachment_filename)
-                #print(data)
-
                 if attachment_filename == 'image001.jpg':
                     continue
 
                 if attachment_filename is not None and data is not None:
-                    print('save: ' + attachment_filename)
                     attachment_path = MOTIONS_PATH + dirname + '/' + attachment_filename
                     if not os.path.exists(attachment_path):
                         file = open(attachment_path, 'wb')
@@ -160,6 +168,7 @@ def main(username, password):
     download_motion_lists(session)
     motions_csv = parse_motion_lists()
     download_motions(motions_csv, session)
+    copy_pdfs(motions_csv)
     extract_email_attachments(motions_csv)
 
     # todo:
