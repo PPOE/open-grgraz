@@ -35,79 +35,42 @@ def download_answer_lists(session):
     print('download_answer_lists')
 
 
-def parse_answer_lists():
-    json_files = glob.glob(ANSWER_LISTS_PATH + '*.json')
+def parse_lists(lists_path = ANSWER_LISTS_PATH, csv_filename ='answers.csv'):
+    json_files = glob.glob(lists_path + '*.json')
 
-    answer_lists = []
-    for filepath in json_files:
-        with open(filepath, 'r') as file:
-            answer_lists.append(json.load(file))
+    element_lists = []
+    for file_path in json_files:
+        with open(file_path, 'r') as file:
+            element_lists.append(json.load(file))
 
-    answers_csv = []
-    for answer_list in answer_lists:
-        for answer in answer_list['Row']:
-            answers_csv.append([
-                answer['Sitzung_x0020_am'],
-                answer['ID'],
-                answer['Title'],
-                answer['Dokumentenart']['Label'],
-                answer['Antragsteller'][0]['jobTitle'] + ' ' + answer['Antragsteller'][0]['title'],
-                answer['Fraktion'],
-                answer['Betreff'],
+    element_csv = []
+    for element_list in element_lists:
+        for element in element_list['Row']:
+            element_csv.append([
+                element['Sitzung_x0020_am'],
+                element['ID'],
+                element['Title'],
+                element['Dokumentenart']['Label'],
+                element['Antragsteller'][0]['jobTitle'] + ' ' + element['Antragsteller'][0]['title'],
+                element['Fraktion'],
+                element['Betreff'],
                 '',
-                answer['FileRef'],
-                answer['FileLeafRef'],
+                element['FileRef'],
+                element['FileLeafRef'],
             ])
 
-    def answer_sort(answer):
+    def element_sort(answer):
         date = answer[0].split('.')
         return date[2], date[2], date[1], int(answer[1])
 
-    answers_csv = sorted(answers_csv, key=answer_sort)
+    element_csv = sorted(element_csv, key=element_sort)
 
-    with open(FILES_PATH + 'answers.csv', 'w', newline='') as csvFile:
-        writer = csv.writer(csvFile)
-        #writer.writerow(('Datum', 'Nummer', 'Titel', 'Art', 'Antragsteller', 'Partei', 'Dringlichkeit', 'Angenommen', 'Link', 'Anwort 1', 'Anwort 2', 'Antwort', 'link'))
-        writer.writerows(answers_csv)
-
-    return answers_csv
-
-def parse_motion_lists():
-    json_files = glob.glob(MOTION_LISTS_PATH + '*.json')
-
-    motion_lists = []
-    for filepath in json_files:
-        with open(filepath, 'r') as file:
-            motion_lists.append(json.load(file))
-
-    motions_csv = []
-    for motion_list in motion_lists:
-        for motion in motion_list['Row']:
-            motions_csv.append([
-                motion['Sitzung_x0020_am'],
-                motion['ID'],
-                motion['Title'],
-                motion['Dokumentenart']['Label'],
-                motion['Antragsteller'][0]['jobTitle'] + ' ' + motion['Antragsteller'][0]['title'],
-                motion['Fraktion'],
-                motion['Betreff'],
-                '',
-                motion['FileRef'],
-                motion['FileLeafRef'],
-            ])
-
-    def motion_sort(motion):
-        date = motion[0].split('.')
-        return date[2], date[2], date[1], int(motion[1])
-
-    motions_csv = sorted(motions_csv, key=motion_sort)
-
-    with open(FILES_PATH + 'motions.csv', 'w', newline='') as csvFile:
-        writer = csv.writer(csvFile)
+    with open(FILES_PATH + csv_filename, 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
         writer.writerow(('Datum', 'Nummer', 'Titel', 'Art', 'Antragsteller', 'Partei', 'Dringlichkeit', 'Angenommen', 'Link', 'Anwort 1', 'Anwort 2', 'Antwort', 'link'))
-        writer.writerows(motions_csv)
+        writer.writerows(element_csv)
 
-    return motions_csv
+    return element_csv
 
 
 def download_from_csv(csv, base_path, session):
@@ -218,8 +181,8 @@ def main(username, password):
     download_motion_lists(session)
     download_answer_lists(session)
     
-    answers_csv = parse_answer_lists()
-    motions_csv = parse_motion_lists()
+    answers_csv = parse_lists(ANSWER_LISTS_PATH, 'answers.csv')
+    motions_csv = parse_lists(MOTION_LISTS_PATH, 'motions.csv')
     
     download_from_csv(answers_csv, RAW_ANSWERS_PATH, session)
     download_from_csv(motions_csv, RAW_MOTIONS_PATH, session)
