@@ -35,7 +35,7 @@ def download_answer_lists(session):
     print('download_answer_lists')
 
 
-def parse_lists(lists_path = ANSWER_LISTS_PATH, csv_filename ='answers.csv'):
+def parse_lists(lists_path, csv_filename):
     json_files = glob.glob(lists_path + '*.json')
 
     element_lists = []
