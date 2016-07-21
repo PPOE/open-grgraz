@@ -128,16 +128,11 @@ def download_from_csv(csv, base_path, session):
                     file.write(chunk)
 
 
-def copy_pdfs(motions_csv):
-    for motion in motions_csv:
-        filename = motion[9]
-
-        if filename.split('.')[-1] != 'pdf':
-            continue
-
-        source_path = RAW_MOTIONS_PATH + filename
-        destination_path = MOTIONS_PATH + filename
-        copyfile(source_path, destination_path)
+def copy_files(source_path, destination_path, pattern):
+    file_paths = glob.glob(source_path + pattern)
+    for file_path in file_paths:
+        filename = file_path.split('/')[-1]
+        copyfile(file_path, destination_path + filename)
 
 
 def convert_documents(motions_csv):
@@ -150,12 +145,12 @@ def convert_documents(motions_csv):
         #unoconv
 
 
-def extract_email_attachments(motions_csv):
+def extract_email_attachments(read_base_path, write_base_path, motions_csv):
     for motion in motions_csv:
         filename = motion[9]
         if filename.split('.')[-1] != 'msg':
             continue
-        file_path = RAW_MOTIONS_PATH + filename
+        file_path = read_base_path + filename
 
         ole = olefile.OleFileIO(file_path)
 
@@ -191,8 +186,8 @@ def extract_email_attachments(motions_csv):
 
         if len(attachment_dirs) > 0:
             dirname = filename.split('.')[0]
-            if not os.path.exists(MOTIONS_PATH + dirname):
-               os.makedirs(MOTIONS_PATH + dirname)
+            if not os.path.exists(write_base_path + dirname):
+               os.makedirs(write_base_path + dirname)
 
             for dir in attachment_dirs:
                 long_filename = get_stream(ole, dir + '/__substg1.0_3707')
@@ -202,15 +197,15 @@ def extract_email_attachments(motions_csv):
                 if ole.exists(dir + '/__substg1.0_37010102'):
                     data = ole.openstream(dir + '/__substg1.0_37010102').read()
 
-                attachment_filename = long_filename
+                attachment_filename = short_filename
                 if attachment_filename is None:
-                    attachment_filename = short_filename
+                    attachment_filename = long_filename
 
                 if attachment_filename == 'image001.jpg':
                     continue
 
                 if attachment_filename is not None and data is not None:
-                    attachment_path = MOTIONS_PATH + dirname + '/' + attachment_filename
+                    attachment_path = write_base_path + dirname + '/' + attachment_filename
                     if not os.path.exists(attachment_path):
                         file = open(attachment_path, 'wb')
                         file.write(data)
@@ -228,10 +223,14 @@ def main(username, password):
     
     download_from_csv(answers_csv, RAW_ANSWERS_PATH, session)
     download_from_csv(motions_csv, RAW_MOTIONS_PATH, session)
-    
-    copy_pdfs(motions_csv)
+
+    copy_files(RAW_ANSWERS_PATH, ANSWERS_PATH, '*.pdf')
+    copy_files(RAW_MOTIONS_PATH, MOTIONS_PATH, '*.pdf')
+
     convert_documents(motions_csv)
-    extract_email_attachments(motions_csv)
+
+    extract_email_attachments(RAW_ANSWERS_PATH, ANSWERS_PATH, answers_csv)
+    extract_email_attachments(RAW_MOTIONS_PATH, MOTIONS_PATH, motions_csv)
 
     # todo:
     #  - fetch motions and answer lists
