@@ -10,6 +10,12 @@ for motions and answers.
 
 ![open-grgraz downloading](https://raw.github.com/PPOE/open-grgraz/master/open-grgraz.jpg "open-grgraz downloading (c) @stefan2904")
 
+Thanks to
+---------
+
+- [mattgwwalker/msg-extractor](https://github.com/mattgwwalker/msg-extractor)
+- [@stefan2904](https://github.com/stefan2904)
+
 script stages
 -------------
 
