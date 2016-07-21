@@ -143,6 +143,9 @@ def extract_email_attachments(motions_csv):
                 #print(attachment_filename)
                 #print(data)
 
+                if attachment_filename == 'image001.jpg':
+                    continue
+
                 if attachment_filename is not None and data is not None:
                     print('save: ' + attachment_filename)
                     attachment_path = MOTIONS_PATH + dirname + '/' + attachment_filename
@@ -152,15 +155,18 @@ def extract_email_attachments(motions_csv):
                         file.close()
 
 
-        #break
-
-
 def main(username, password):
     session = create_session(username, password)
     download_motion_lists(session)
     motions_csv = parse_motion_lists()
     download_motions(motions_csv, session)
     extract_email_attachments(motions_csv)
+
+    # todo:
+    #  - create pdfs out of word documents,
+    #  - ocr pdfs without text
+    #  - fetch answers
+    #  - match motions and answers
 
 
 if __name__ == '__main__':
