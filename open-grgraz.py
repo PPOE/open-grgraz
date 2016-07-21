@@ -6,13 +6,16 @@ import requests
 from requests_ntlm import HttpNtlmAuth
 import olefile
 from shutil import copyfile
+import glob
 
 BASE_URL = 'https://magistrat.graz.at'
 FILES_PATH = 'files/'
 MOTION_LISTS_PATH = FILES_PATH + 'motionLists/'
 ANSWER_LISTS_PATH = FILES_PATH + 'answerLists/'
 RAW_MOTIONS_PATH = FILES_PATH + 'motionsRaw/'
+RAW_ANSWERS_PATH = FILES_PATH + 'answersRaw/'
 MOTIONS_PATH = FILES_PATH + 'motions/'
+ANSWERS_PATH = FILES_PATH + 'answers/'
 
 
 def create_session(username, password):
@@ -32,18 +35,54 @@ def download_answer_lists(session):
     print('download_answer_lists')
 
 
+def parse_answer_lists():
+    json_files = glob.glob(ANSWER_LISTS_PATH + '*.json')
+
+    answer_lists = []
+    for filepath in json_files:
+        with open(filepath, 'r') as file:
+            answer_lists.append(json.load(file))
+
+    answers_csv = []
+    for answer_list in answer_lists:
+        for answer in answer_list['Row']:
+            answers_csv.append([
+                answer['Sitzung_x0020_am'],
+                answer['ID'],
+                answer['Title'],
+                answer['Dokumentenart']['Label'],
+                answer['Antragsteller'][0]['jobTitle'] + ' ' + answer['Antragsteller'][0]['title'],
+                answer['Fraktion'],
+                answer['Betreff'],
+                '',
+                answer['FileRef'],
+                answer['FileLeafRef'],
+            ])
+
+    def answer_sort(answer):
+        date = answer[0].split('.')
+        return date[2], date[2], date[1], int(answer[1])
+
+    answers_csv = sorted(answers_csv, key=answer_sort)
+
+    with open(FILES_PATH + 'answers.csv', 'w', newline='') as csvFile:
+        writer = csv.writer(csvFile)
+        #writer.writerow(('Datum', 'Nummer', 'Titel', 'Art', 'Antragsteller', 'Partei', 'Dringlichkeit', 'Angenommen', 'Link', 'Anwort 1', 'Anwort 2', 'Antwort', 'link'))
+        writer.writerows(answers_csv)
+
+    return answers_csv
+
 def parse_motion_lists():
-    json_files = os.listdir(MOTION_LISTS_PATH)
-    json_files = filter(lambda name: name.endswith('.json'), json_files)
+    json_files = glob.glob(MOTION_LISTS_PATH + '*.json')
 
     motion_lists = []
-    for file_name in json_files:
-        with open(MOTION_LISTS_PATH + file_name) as file:
+    for filepath in json_files:
+        with open(filepath, 'r') as file:
             motion_lists.append(json.load(file))
 
     motions_csv = []
-    for motionList in motion_lists:
-        for motion in motionList['Row']:
+    for motion_list in motion_lists:
+        for motion in motion_list['Row']:
             motions_csv.append([
                 motion['Sitzung_x0020_am'],
                 motion['ID'],
@@ -59,7 +98,7 @@ def parse_motion_lists():
 
     def motion_sort(motion):
         date = motion[0].split('.')
-        return date[2], date[2], date[1], motion[1]
+        return date[2], date[2], date[1], int(motion[1])
 
     motions_csv = sorted(motions_csv, key=motion_sort)
 
@@ -71,22 +110,23 @@ def parse_motion_lists():
     return motions_csv
 
 
-def download_motions(motions_csv, session):
+def download_from_csv(csv, base_path, session):
     download_number = 1
-    for motion in motions_csv:
-        url = BASE_URL + motion[8]
+    for line in csv:
+        url = BASE_URL + line[8]
         local_filename = url.split('/')[-1]
 
-        if os.path.exists(RAW_MOTIONS_PATH + local_filename):
+        if os.path.exists(base_path + local_filename):
             continue
 
         print('{:>4} - downloading: {}'.format(download_number, local_filename))
         download_number += 1
         result = session.get(url, stream=True)
-        with open(RAW_MOTIONS_PATH + local_filename, 'wb') as file:
+        with open(base_path + local_filename, 'wb') as file:
             for chunk in result.iter_content(chunk_size=1024):
                 if chunk:
                     file.write(chunk)
+
 
 def copy_pdfs(motions_csv):
     for motion in motions_csv:
@@ -179,10 +219,16 @@ def extract_email_attachments(motions_csv):
 
 def main(username, password):
     session = create_session(username, password)
+    
     download_motion_lists(session)
     download_answer_lists(session)
+    
+    answers_csv = parse_answer_lists()
     motions_csv = parse_motion_lists()
-    download_motions(motions_csv, session)
+    
+    download_from_csv(answers_csv, RAW_ANSWERS_PATH, session)
+    download_from_csv(motions_csv, RAW_MOTIONS_PATH, session)
+    
     copy_pdfs(motions_csv)
     convert_documents(motions_csv)
     extract_email_attachments(motions_csv)
