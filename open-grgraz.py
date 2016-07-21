@@ -10,7 +10,8 @@ from shutil import copyfile
 BASE_URL = 'https://magistrat.graz.at'
 FILES_PATH = 'files/'
 MOTION_LISTS_PATH = FILES_PATH + 'motionLists/'
-RAW_MOTIONS_PATH = FILES_PATH + 'rawMotions/'
+ANSWER_LISTS_PATH = FILES_PATH + 'answerLists/'
+RAW_MOTIONS_PATH = FILES_PATH + 'motionsRaw/'
 MOTIONS_PATH = FILES_PATH + 'motions/'
 
 
@@ -24,7 +25,11 @@ def create_session(username, password):
 
 
 def download_motion_lists(session):
-    print('downloadMotionLists')
+    print('download_motion_lists')
+
+
+def download_answer_lists(session):
+    print('download_answer_lists')
 
 
 def parse_motion_lists():
@@ -94,6 +99,15 @@ def copy_pdfs(motions_csv):
         destination_path = MOTIONS_PATH + filename
         copyfile(source_path, destination_path)
 
+
+def convert_documents(motions_csv):
+    for motion in motions_csv:
+        filename = motion[9]
+        if filename.split('.')[-1] == 'msg' or filename.split('.')[-1] == 'pdf':
+            continue
+
+        #todo
+        #unoconv
 
 
 def extract_email_attachments(motions_csv):
@@ -166,15 +180,17 @@ def extract_email_attachments(motions_csv):
 def main(username, password):
     session = create_session(username, password)
     download_motion_lists(session)
+    download_answer_lists(session)
     motions_csv = parse_motion_lists()
     download_motions(motions_csv, session)
     copy_pdfs(motions_csv)
+    convert_documents(motions_csv)
     extract_email_attachments(motions_csv)
 
     # todo:
+    #  - fetch motions and answer lists
     #  - create pdfs out of word documents,
     #  - ocr pdfs without text
-    #  - fetch answers
     #  - match motions and answers
 
 
