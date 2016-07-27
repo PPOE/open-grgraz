@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
+from rest_framework import mixins, generics
 from api.models import *
 from api.serializers import *
 
@@ -19,54 +20,62 @@ def index(request):
     return HttpResponse('Hello API World!')
 
 
-@csrf_exempt
-def groups(request):
-    parl_groups = ParliamentaryGroup.objects.all()
-    serializer = ParliamentaryGroupSerializer(parl_groups, many=True)
-    return JsonResponse(serializer.data)
+class GroupList(generics.ListAPIView):
+    serializer_class = ParliamentaryGroupSerializer
+    queryset = ParliamentaryGroup.objects.all()
 
 
-@csrf_exempt
-def group_detail(request, id):
-    try:
-        parl_group = ParliamentaryGroup.objects.get(id=id)
-    except ParliamentaryGroup.DoesNotExist:
-        return HttpResponse(status=404)
-    serializer = ParliamentaryGroupSerializer(parl_group)
-    return JsonResponse(serializer.data)
+class GroupDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    serializer_class = ParliamentaryGroupSerializer
+    queryset = ParliamentaryGroup.objects.all()
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
-@csrf_exempt
-def parliamentary_sessions(request):
-    sessions = ParliamentarySession.objects.all()
-    serializer = ParliamentarySessionSerializer(sessions, many=True)
-    return JsonResponse(serializer.data)
+class SessionList(generics.ListAPIView):
+    serializer_class = ParliamentarySessionSerializer
+    queryset = ParliamentarySession.objects.all()
 
 
-@csrf_exempt
-def council_persons(request):
-    persons = CouncilPerson.objects.all()
-    serializer = CouncilPersonSerializer(persons, many=True)
-    return JsonResponse(serializer.data)
+class PersonList(generics.ListAPIView):
+    serializer_class = CouncilPersonSerializer
+
+    def get_queryset(self):
+        queryset = CouncilPerson.objects.all()
+        group = self.request.query_params.get('group', None)
+        if group is not None:
+            queryset = queryset.filter(parliamentary_group__id=group)
+        return queryset
 
 
-@csrf_exempt
-def motion_types(request):
-    types = MotionType.objects.all()
-    serializer = MotionTypeSerializer(types, many=True)
-    return JsonResponse(serializer.data)
+class TypeList(generics.ListAPIView):
+    serializer_class = MotionTypeSerializer
+    queryset = MotionType.objects.all()
 
 
-@csrf_exempt
-def files(request):
-    files = File.objects.all()
-    serializer = FileSerializer(files, many=True)
-    return JsonResponse(serializer.data)
+class FileList(generics.ListAPIView):
+    serializer_class = FileSerializer
+    queryset = File.objects.all()
 
 
-@csrf_exempt
-def motions(request):
-    motions = Motion.objects.all()
-    serializer = MotionSerializer(motions, many=True)
-    return JsonResponse(serializer.data)
+class MotionList(generics.ListAPIView):
+    serializer_class = MotionSerializer
+
+    def get_queryset(self):
+        queryset = Motion.objects.all()
+        session = self.request.query_params.get('session', None)
+        type = self.request.query_params.get('type', None)
+        group = self.request.query_params.get('group', None)
+        proposer = self.request.query_params.get('proposer', None)
+        if session is not None:
+            queryset = queryset.filter(session__session_date=session)
+        if type is not None:
+            queryset = queryset.filter(motion_type__name=type)
+        if group is not None:
+            queryset = queryset.filter(parliamentary_group__id=group)
+        if proposer is not None:
+            queryset = queryset.filter(proposer__name=proposer)
+        return queryset
 
