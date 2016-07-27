@@ -1,5 +1,10 @@
 env
 
+*.pyc
+__pycache__
+
+db.sqlite3
+
 files/motions.csv
 files/answers.csv
 

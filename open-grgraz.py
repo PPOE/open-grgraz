@@ -178,8 +178,8 @@ def extract_email_attachments(read_base_path, write_base_path, motions_csv):
 def main(username, password):
     session = create_session(username, password)
     
-    download_motion_lists(session)
-    download_answer_lists(session)
+    download_motion_lists(session)  # this does nothing for now.
+    download_answer_lists(session)  # this does nothing for now.
     
     answers_csv = parse_lists(ANSWER_LISTS_PATH, 'answers.csv')
     motions_csv = parse_lists(MOTION_LISTS_PATH, 'motions.csv')
@@ -200,6 +200,9 @@ def main(username, password):
     #  - create pdfs out of word documents,
     #  - ocr pdfs without text
     #  - match motions and answers
+    #  - create database model
+    #  - create webfrontend
+    #  - structure code in models
 
 
 if __name__ == '__main__':
