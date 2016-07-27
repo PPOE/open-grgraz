@@ -15,7 +15,7 @@ class ParliamentarySession(models.Model):
     session_date = models.DateField()
 
     def __str__(self):
-        return self.session_date
+        return str(self.session_date)
 
 
 class CouncilPerson(models.Model):
@@ -35,7 +35,7 @@ class MotionType(models.Model):
         return self.name
 
 
-class Files(models.Model):
+class File(models.Model):
     long_filename = models.CharField(max_length=1000)
     short_filename = models.CharField(max_length=100)
     # full_text = models.TextField() maybe?
@@ -52,8 +52,8 @@ class Motion(models.Model):
     motion_type = models.ForeignKey(MotionType)
     parliamentary_group = models.ForeignKey(ParliamentaryGroup)
     proposer = models.ForeignKey(CouncilPerson)
-    files = models.ManyToManyField(Files)
-    answer = models.ForeignKey('self')
+    files = models.ManyToManyField(File)
+    answer = models.ForeignKey('self', null=True, blank=True)
 
     def __str__(self):
         return self.title
