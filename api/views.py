@@ -40,6 +40,12 @@ def motion_stats(request):
         .annotate(num_total=Count('id', distinct=True),
                   num_answered=Count('answers__motion_id', distinct=True))\
         .order_by('-num_total')
+
+    for stat in stats:
+        stat['answered_percent'] = '{:.2f}'.format((stat['num_answered'] / stat['num_total']) * 100)
+
+    stats = sorted(stats, key=lambda s: s['answered_percent'], reverse=True)
+
     return HttpResponse(stats)
 
 
