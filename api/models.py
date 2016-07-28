@@ -40,7 +40,7 @@ class File(models.Model):
 
 class Answer(models.Model):
     id = models.IntegerField(primary_key=True)
-    motion_id = models.IntegerField(default=None, null=True)
+    motion_id = models.IntegerField(default=-1)
     session = models.ForeignKey(ParliamentarySession)
     title = models.CharField(max_length=1000)
     parliamentary_group = models.ForeignKey(ParliamentaryGroup)
@@ -53,14 +53,17 @@ class Answer(models.Model):
 
 class Motion(models.Model):
     id = models.IntegerField(primary_key=True)
-    motion_id = models.IntegerField(default=None, null=True)
+    motion_id = models.IntegerField(default=-1)
     session = models.ForeignKey(ParliamentarySession)
     title = models.CharField(max_length=1000)
-    motion_type = models.CharField(max_length=200, default=None, null=True)
+    motion_type = models.CharField(max_length=200, default='')
     parliamentary_group = models.ForeignKey(ParliamentaryGroup)
     proposer = models.ForeignKey(CouncilPerson)
     files = models.ManyToManyField(File)
     answers = models.ManyToManyField(Answer, null=True, blank=True)
+
+    def answered(self):
+        return self.answers.count() > 0
 
     def __str__(self):
         return self.title

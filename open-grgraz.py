@@ -72,9 +72,11 @@ def parse_lists(lists_path, csv_filename):
 
             #print(person)
 
+            #todo: files?
+
             motion_type = element['Dokumentenart']['Label']
             motion_id = int(float(element['FileLeafRef'][:4].replace('_', '')))
-            print(motion_id)
+            #print(motion_id)
             if motion_type == 'GR-Antwort':
                 answer = Answer.objects.update_or_create(id=element['ID'], motion_id=motion_id,
                                                          session=session, title=element['Title'],

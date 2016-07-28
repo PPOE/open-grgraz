@@ -1,7 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
+from django.views import generic
 from rest_framework import mixins, generics
 from api.models import *
 from api.serializers import *
@@ -9,23 +8,42 @@ from api.serializers import *
 # Create your views here.
 
 
-class JsonResponse(HttpResponse):
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        super(JsonResponse, self).__init__(content, **kwargs)
+class IndexView(generic.ListView):
+    template_name = 'motions/index.html'
+    context_object_name = 'motions'
+
+    def get_queryset(self):
+        queryset = Motion.objects.order_by('-session', '-motion_id', '-id')
+        session = self.request.GET.get('session', None)
+        type = self.request.GET.get('type', None)
+        group = self.request.GET.get('group', None)
+        proposer = self.request.GET.get('proposer', None)
+        if session is not None:
+            queryset = queryset.filter(session__session_date=session)
+        if type is not None:
+            queryset = queryset.filter(motion_type=type)
+        if group is not None:
+            queryset = queryset.filter(parliamentary_group__id=group)
+        if proposer is not None:
+            queryset = queryset.filter(proposer__name=proposer)
+        return queryset
 
 
-def index(request):
+def motion_detail(request, id):
+    motion = get_object_or_404(Motion, id=id)
+    return render(request, 'motions/detail.html', {'motion': motion})
+
+
+def api_index(request):
     return HttpResponse('Hello API World!')
 
 
-class GroupList(generics.ListAPIView):
+class ApiGroupList(generics.ListAPIView):
     serializer_class = ParliamentaryGroupSerializer
     queryset = ParliamentaryGroup.objects.all()
 
 
-class GroupDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
+class ApiGroupDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = ParliamentaryGroupSerializer
     queryset = ParliamentaryGroup.objects.all()
     lookup_field = 'id'
@@ -34,12 +52,12 @@ class GroupDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
         return self.retrieve(request, *args, **kwargs)
 
 
-class SessionList(generics.ListAPIView):
+class ApiSessionList(generics.ListAPIView):
     serializer_class = ParliamentarySessionSerializer
     queryset = ParliamentarySession.objects.all()
 
 
-class PersonList(generics.ListAPIView):
+class ApiPersonList(generics.ListAPIView):
     serializer_class = CouncilPersonSerializer
 
     def get_queryset(self):
@@ -50,12 +68,12 @@ class PersonList(generics.ListAPIView):
         return queryset
 
 
-class FileList(generics.ListAPIView):
+class ApiFileList(generics.ListAPIView):
     serializer_class = FileSerializer
     queryset = File.objects.all()
 
 
-class AnswerList(generics.ListAPIView):
+class ApiAnswerList(generics.ListAPIView):
     serializer_class = AnswerSerializer
 
     def get_queryset(self):
@@ -72,7 +90,7 @@ class AnswerList(generics.ListAPIView):
         return queryset
 
 
-class MotionList(generics.ListAPIView):
+class ApiMotionList(generics.ListAPIView):
     serializer_class = MotionSerializer
 
     def get_queryset(self):
@@ -84,7 +102,7 @@ class MotionList(generics.ListAPIView):
         if session is not None:
             queryset = queryset.filter(session__session_date=session)
         if type is not None:
-            queryset = queryset.filter(motion_type__name=type)
+            queryset = queryset.filter(motion_type=type)
         if group is not None:
             queryset = queryset.filter(parliamentary_group__id=group)
         if proposer is not None:
