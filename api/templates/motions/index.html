@@ -22,7 +22,7 @@
                 <td><a href="?type={{ motion.motion_type }}">{{ motion.motion_type }}</a></td>
                 <td>{{ motion.answered }}</td>
                 <td class="title"><a href="{% url 'motion_detail' motion.id %}">{{ motion.title }}</a></td>
-                <td><a href="?group={{ motion.parliamentary_group }}">{{ motion.parliamentary_group }}</a></td>
+                <td><a href="?group={{ motion.parliamentary_group.id }}">{{ motion.parliamentary_group.id }}</a></td>
                 <td><a href="?proposer={{ motion.proposer.name }}">{{ motion.proposer }}</a></td>
             </tr>
             {% endfor %}

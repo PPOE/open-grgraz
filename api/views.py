@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.views import generic
+from django.db.models import Count
 from rest_framework import mixins, generics
 from api.models import *
 from api.serializers import *
@@ -32,6 +33,14 @@ class IndexView(generic.ListView):
 def motion_detail(request, id):
     motion = get_object_or_404(Motion, id=id)
     return render(request, 'motions/detail.html', {'motion': motion})
+
+
+def motion_stats(request):
+    stats = Motion.objects.values('parliamentary_group')\
+        .annotate(num_total=Count('id', distinct=True),
+                  num_answered=Count('answers__motion_id', distinct=True))\
+        .order_by('-num_total')
+    return HttpResponse(stats)
 
 
 def api_index(request):

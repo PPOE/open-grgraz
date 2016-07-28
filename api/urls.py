@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^motion/(?P<id>[\d]+)/$', views.motion_detail, name='motion_detail'),
+    url(r'^stats/$', views.motion_stats, name='motion_stats'),
 
 
     url(r'^api/v0/$', views.api_index, name='api_index'),
