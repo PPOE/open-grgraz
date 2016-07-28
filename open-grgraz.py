@@ -7,6 +7,10 @@ from requests_ntlm import HttpNtlmAuth
 import olefile
 from shutil import copyfile
 import glob
+import open_grgraz.wsgi
+import api
+from api.models import *
+import datetime
 
 BASE_URL = 'https://magistrat.graz.at'
 FILES_PATH = 'files/'
@@ -46,6 +50,53 @@ def parse_lists(lists_path, csv_filename):
     element_csv = []
     for element_list in element_lists:
         for element in element_list['Row']:
+
+            if 'Polz Wolfgang' == element['Antragsteller'][0]['title']:
+                continue
+
+            session_date = datetime.datetime.strptime(element['Sitzung_x0020_am'], '%d.%m.%Y')
+            session = ParliamentarySession.objects.update_or_create(session_date=session_date)[0]
+            #print(session)
+
+            group_id = element['Fraktion']
+            group = ParliamentaryGroup.objects.update_or_create(id=group_id, name=group_id)[0]
+            #print(group)
+
+            person_name = element['Antragsteller'][0]['title']
+            person_academic_degree = element['Antragsteller'][0]['jobTitle']
+            person_email = element['Antragsteller'][0]['email']
+            person = CouncilPerson.objects.update_or_create(name=person_name,
+                                                         academic_degree=person_academic_degree,
+                                                         email=person_email,
+                                                         parliamentary_group=group)[0]
+
+            #print(person)
+
+            motion_type = element['Dokumentenart']['Label']
+            motion_id = int(float(element['FileLeafRef'][:4].replace('_', '')))
+            print(motion_id)
+            if motion_type == 'GR-Antwort':
+                answer = Answer.objects.update_or_create(id=element['ID'], motion_id=motion_id,
+                                                         session=session, title=element['Title'],
+                                                         parliamentary_group=group, proposer=person)[0]
+                #print(answer)
+            else:
+                from django.core.exceptions import ObjectDoesNotExist
+                try:
+                    answers = Answer.objects.filter(motion_id=motion_id)
+                except ObjectDoesNotExist:
+                    answers = None
+                motion = Motion.objects.update_or_create(id=element['ID'], motion_id=motion_id,
+                                                         session=session, title=element['Title'],
+                                                         motion_type=motion_type, parliamentary_group=group,
+                                                         proposer=person)[0]
+                motion.answers.set(answers)
+                motion.save()
+                #print(motion)
+
+            #todo: fix id conflict, separate motion and answer in different tables..
+
+
             element_csv.append([
                 element['Sitzung_x0020_am'],
                 element['ID'],
@@ -175,12 +226,13 @@ def extract_email_attachments(read_base_path, write_base_path, motions_csv):
                         file.close()
 
 
+
 def main(username, password):
     session = create_session(username, password)
     
     download_motion_lists(session)  # this does nothing for now.
     download_answer_lists(session)  # this does nothing for now.
-    
+
     answers_csv = parse_lists(ANSWER_LISTS_PATH, 'answers.csv')
     motions_csv = parse_lists(MOTION_LISTS_PATH, 'motions.csv')
     

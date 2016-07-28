@@ -28,13 +28,6 @@ class CouncilPerson(models.Model):
         return '{} {}'.format(self.academic_degree, self.name)
 
 
-class MotionType(models.Model):
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.name
-
-
 class File(models.Model):
     long_filename = models.CharField(max_length=1000)
     short_filename = models.CharField(max_length=100)
@@ -45,15 +38,29 @@ class File(models.Model):
         return self.short_filename
 
 
-class Motion(models.Model):
+class Answer(models.Model):
     id = models.IntegerField(primary_key=True)
+    motion_id = models.IntegerField(default=None, null=True)
     session = models.ForeignKey(ParliamentarySession)
     title = models.CharField(max_length=1000)
-    motion_type = models.ForeignKey(MotionType)
     parliamentary_group = models.ForeignKey(ParliamentaryGroup)
     proposer = models.ForeignKey(CouncilPerson)
     files = models.ManyToManyField(File)
-    answer = models.ForeignKey('self', null=True, blank=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Motion(models.Model):
+    id = models.IntegerField(primary_key=True)
+    motion_id = models.IntegerField(default=None, null=True)
+    session = models.ForeignKey(ParliamentarySession)
+    title = models.CharField(max_length=1000)
+    motion_type = models.CharField(max_length=200, default=None, null=True)
+    parliamentary_group = models.ForeignKey(ParliamentaryGroup)
+    proposer = models.ForeignKey(CouncilPerson)
+    files = models.ManyToManyField(File)
+    answers = models.ManyToManyField(Answer, null=True, blank=True)
 
     def __str__(self):
         return self.title

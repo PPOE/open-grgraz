@@ -50,14 +50,26 @@ class PersonList(generics.ListAPIView):
         return queryset
 
 
-class TypeList(generics.ListAPIView):
-    serializer_class = MotionTypeSerializer
-    queryset = MotionType.objects.all()
-
-
 class FileList(generics.ListAPIView):
     serializer_class = FileSerializer
     queryset = File.objects.all()
+
+
+class AnswerList(generics.ListAPIView):
+    serializer_class = AnswerSerializer
+
+    def get_queryset(self):
+        queryset = Motion.objects.all()
+        session = self.request.query_params.get('session', None)
+        group = self.request.query_params.get('group', None)
+        proposer = self.request.query_params.get('proposer', None)
+        if session is not None:
+            queryset = queryset.filter(session__session_date=session)
+        if group is not None:
+            queryset = queryset.filter(parliamentary_group__id=group)
+        if proposer is not None:
+            queryset = queryset.filter(proposer__name=proposer)
+        return queryset
 
 
 class MotionList(generics.ListAPIView):

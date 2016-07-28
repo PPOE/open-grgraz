@@ -7,6 +7,6 @@ from api.models import *
 admin.site.register(ParliamentaryGroup)
 admin.site.register(ParliamentarySession)
 admin.site.register(CouncilPerson)
-admin.site.register(MotionType)
 admin.site.register(File)
+admin.site.register(Answer)
 admin.site.register(Motion)
