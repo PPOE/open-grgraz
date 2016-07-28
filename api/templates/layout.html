@@ -1,0 +1,24 @@
+<!doctype html>{% load staticfiles %}
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <title>Open Gemeinderat Graz</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-theme.min.css' %}">
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Open Gemeinderat Graz</h1>
+            <span>
+                Eine Initiative der <a href="https://steiermark.piratenpartei.at">
+                Piratenpartei Steiermark</a>.
+            </span>
+
+            {% block body_block %}{% endblock %}
+        </div>
+    </body>
+</html>

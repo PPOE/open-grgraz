@@ -1,11 +1,14 @@
-<h1>{{ motion }}</h1>
+{% extends 'layout.html' %}
 
-<div>
-    <p>Type: {{ motion.motion_type }}</p>
-    <p>Session: {{ motion.session }}</p>
-    <p>Group: {{ motion.parliamentary_group }}</p>
-    <p>Proposer: {{ motion.proposer }}</p>
-    <p>Files: {{ motion.session }}</p>
-    <p>Answers: {{ motion.files }}</p>
-    <p>Session: {{ motion.answers }}</p>
-</div>
+{% block body_block %}
+    <h2>{{ motion }}</h2>
+
+    <div>
+        <p>Typ: <a href="/?type={{ motion.motion_type }}">{{ motion.motion_type }}</a></p>
+        <p>Sitzung: <a href="/?session={{ motion.session }}">{{ motion.session }}</a></p>
+        <p>Fraktion: <a href="/?group={{ motion.parliamentary_group }}">{{ motion.parliamentary_group }}</a></p>
+        <p>AntragsstellerIn: <a href="/?proposer={{ motion.proposer.name }}">{{ motion.proposer }}</a></p>
+        <p>Dateien: {{ motion.files }}</p>
+        <p>Beantworted: {{ motion.answered }}</p>
+    </div>
+{% endblock %}

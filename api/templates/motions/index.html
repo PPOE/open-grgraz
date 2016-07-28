@@ -1,30 +1,34 @@
-{% if motions %}
-    <table>
-        <thead>
+{% extends 'layout.html' %}
+
+{% block body_block %}
+    {% if motions %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Sitzung</th>
+                    <th>Typ</th>
+                    <th>Beantwortet</th>
+                    <th>Titel</th>
+                    <th>Fraktion</th>
+                    <th>AntragsstellerIn</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for motion in motions %}
             <tr>
-                <th>Motion Id</th>
-                <th>Answered</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Session</th>
-                <th>Group</th>
-                <th>Proposer</th>
+                <td>{{ motion.motion_id }}</td>
+                <td><a href="?session={{ motion.session }}">{{ motion.session }}</a></td>
+                <td><a href="?type={{ motion.motion_type }}">{{ motion.motion_type }}</a></td>
+                <td>{{ motion.answered }}</td>
+                <td><a href="{% url 'motion_detail' motion.id %}">{{ motion.title }}</a></td>
+                <td><a href="?group={{ motion.parliamentary_group }}">{{ motion.parliamentary_group }}</a></td>
+                <td><a href="?proposer={{ motion.proposer.name }}">{{ motion.proposer }}</a></td>
             </tr>
-        </thead>
-        <tbody>
-        {% for motion in motions %}
-        <tr>
-            <td>{{ motion.motion_id }}</td>
-            <td>{{ motion.answered }}</td>
-            <td><a href="{% url 'motion_detail' motion.id %}">{{ motion.title }}</a></td>
-            <td><a href="?type={{ motion.motion_type }}">{{ motion.motion_type }}</a></td>
-            <td><a href="?session={{ motion.session }}">{{ motion.session }}</a></td>
-            <td><a href="?group={{ motion.parliamentary_group }}">{{ motion.parliamentary_group }}</a></td>
-            <td><a href="?proposer={{ motion.proposer.name }}">{{ motion.proposer }}</a></td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>There are no motions. :(</p>
-{% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>There are no motions. :(</p>
+    {% endif %}
+{% endblock %}

@@ -64,6 +64,8 @@ def parse_lists(lists_path, csv_filename):
 
             person_name = element['Antragsteller'][0]['title']
             person_academic_degree = element['Antragsteller'][0]['jobTitle']
+            if person_academic_degree == person_name:
+                person_academic_degree = ''
             person_email = element['Antragsteller'][0]['email']
             person = CouncilPerson.objects.update_or_create(name=person_name,
                                                          academic_degree=person_academic_degree,
