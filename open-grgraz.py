@@ -55,11 +55,11 @@ def parse_lists(lists_path, csv_filename):
                 continue
 
             session_date = datetime.datetime.strptime(element['Sitzung_x0020_am'], '%d.%m.%Y')
-            session = ParliamentarySession.objects.update_or_create(session_date=session_date)[0]
+            session = ParliamentarySession.objects.get_or_create(session_date=session_date)[0]
             #print(session)
 
             group_id = element['Fraktion']
-            group = ParliamentaryGroup.objects.update_or_create(id=group_id, name=group_id)[0]
+            group = ParliamentaryGroup.objects.get_or_create(id=group_id, defaults={'name': group_id})[0]
             #print(group)
 
             person_name = element['Antragsteller'][0]['title']
@@ -67,10 +67,10 @@ def parse_lists(lists_path, csv_filename):
             if person_academic_degree == person_name:
                 person_academic_degree = ''
             person_email = element['Antragsteller'][0]['email']
-            person = CouncilPerson.objects.update_or_create(name=person_name,
-                                                         academic_degree=person_academic_degree,
-                                                         email=person_email,
-                                                         parliamentary_group=group)[0]
+            person = CouncilPerson.objects.update_or_create(name=person_name, defaults={
+                                                         'academic_degree': person_academic_degree,
+                                                         'email': person_email,
+                                                         'parliamentary_group': group})[0]
 
             #print(person)
 
@@ -80,9 +80,9 @@ def parse_lists(lists_path, csv_filename):
             motion_id = int(float(element['FileLeafRef'][:4].replace('_', '')))
             #print(motion_id)
             if motion_type == 'GR-Antwort':
-                answer = Answer.objects.update_or_create(id=element['ID'], motion_id=motion_id,
-                                                         session=session, title=element['Title'],
-                                                         parliamentary_group=group, proposer=person)[0]
+                answer = Answer.objects.update_or_create(id=element['ID'], defaults={'motion_id': motion_id,
+                                                         'session': session, 'title': element['Title'],
+                                                         'parliamentary_group': group, 'proposer': person})[0]
                 #print(answer)
             else:
                 from django.core.exceptions import ObjectDoesNotExist
@@ -90,10 +90,10 @@ def parse_lists(lists_path, csv_filename):
                     answers = Answer.objects.filter(motion_id=motion_id)
                 except ObjectDoesNotExist:
                     answers = None
-                motion = Motion.objects.update_or_create(id=element['ID'], motion_id=motion_id,
-                                                         session=session, title=element['Title'],
-                                                         motion_type=motion_type, parliamentary_group=group,
-                                                         proposer=person)[0]
+                motion = Motion.objects.update_or_create(id=element['ID'], defaults={'motion_id': motion_id,
+                                                         'session': session, 'title': element['Title'],
+                                                         'motion_type': motion_type, 'parliamentary_group': group,
+                                                         'proposer': person})[0]
                 motion.answers.set(answers)
                 motion.save()
                 #print(motion)

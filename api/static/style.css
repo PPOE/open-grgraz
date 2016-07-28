@@ -1,3 +1,11 @@
 h1 {
     display: inline-block;
 }
+
+table td {
+    white-space: nowrap;
+}
+
+table td.title {
+    white-space: normal;
+}
