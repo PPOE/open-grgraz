@@ -94,8 +94,6 @@ def parse_lists(lists_path, csv_filename):
                 motion.save()
                 #print(motion)
 
-            #todo: fix id conflict, separate motion and answer in different tables..
-
 
             element_csv.append([
                 element['Sitzung_x0020_am'],
@@ -251,10 +249,7 @@ def main(username, password):
     #  - fetch motions and answer lists
     #  - create pdfs out of word documents,
     #  - ocr pdfs without text
-    #  - match motions and answers
-    #  - create database model
     #  - create webfrontend
-    #  - structure code in models
 
 
 if __name__ == '__main__':
