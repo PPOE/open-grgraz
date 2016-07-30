@@ -9,12 +9,50 @@ from api.serializers import *
 # Create your views here.
 
 
-class IndexView(generic.ListView):
-    template_name = 'motions/index.html'
+def index(request):
+    new_motions = Motion.objects.order_by('-session', '-motion_id', '-id')[:3]
+    new_answers = Motion.objects.filter(answers__gt=0).order_by('-session', '-motion_id', '-id')[:3]  #todo
+    old_no_answer = Motion.objects.filter(answers__isnull=True).order_by('session', 'motion_id', 'id')[:3]
+
+    context = {'new_motions': new_motions, 'new_answers': new_answers, 'old_no_answer': old_no_answer}
+    return render(request, 'index.html', context)
+
+
+def groups(request):
+    groups = Motion.objects.values('parliamentary_group')\
+        .annotate(motion_count=Count('id', distinct=True),
+                  answered_count=Count('answers__motion_id', distinct=True))
+
+    for group in groups:
+        group['answered_percent'] = float('{:.2f}'.format((group['answered_count'] / group['motion_count']) * 100))
+
+    groups = sorted(groups, key=lambda s: s['answered_percent'], reverse=True)
+
+    context = {'groups': groups}
+    return render(request, 'groups/index.html', context)
+
+
+def council_persons(request):
+    #todo: fix duplicates
+    council_persons = Motion.objects.values('proposer', 'parliamentary_group')\
+        .annotate(motion_count=Count('id', distinct=True),
+                  answered_count=Count('answers__motion_id', distinct=True))
+
+    for person in council_persons:
+        person['answered_percent'] = float('{:.2f}'.format((person['answered_count'] / person['motion_count']) * 100))
+
+    council_persons = sorted(council_persons, key=lambda s: s['answered_percent'], reverse=True)
+
+    return render(request, 'council_persons/index.html', {'council_persons': council_persons})
+
+
+class MotionsList(generic.ListView):
+    template_name = 'motions/list.html'
     context_object_name = 'motions'
 
     def get_queryset(self):
         queryset = Motion.objects.order_by('-session', '-motion_id', '-id')
+        # todo: order_by, filter answered, pagination, search
         session = self.request.GET.get('session', None)
         type = self.request.GET.get('type', None)
         group = self.request.GET.get('group', None)
@@ -36,17 +74,17 @@ def motion_detail(request, id):
 
 
 def motion_stats(request):
-    stats = Motion.objects.values('parliamentary_group')\
+    answered_stats = Motion.objects.values('parliamentary_group')\
         .annotate(num_total=Count('id', distinct=True),
                   num_answered=Count('answers__motion_id', distinct=True))\
         .order_by('-num_total')
 
-    for stat in stats:
-        stat['answered_percent'] = '{:.2f}'.format((stat['num_answered'] / stat['num_total']) * 100)
+    for stat in answered_stats:
+        stat['answered_percent'] = float('{:.2f}'.format((stat['num_answered'] / stat['num_total']) * 100))
 
-    stats = sorted(stats, key=lambda s: s['answered_percent'], reverse=True)
+    answered_stats = sorted(answered_stats, key=lambda s: s['answered_percent'], reverse=True)
 
-    return HttpResponse(stats)
+    return HttpResponse(answered_stats)
 
 
 def api_index(request):

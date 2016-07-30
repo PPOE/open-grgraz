@@ -1,0 +1,139 @@
+{% extends 'layout.html' %}
+
+{% block body_block %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            explain what this is. explain the parliamentary process. etc.
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Neue Anträge
+                </div>
+                <div class="panel-body">
+                    {% if new_motions %}
+                        <ul>
+                            {% for motion in new_motions %}
+                                <li><a href="{% url 'motion_detail' motion.id %}">{{ motion.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        <p class="text-right">
+                            <a href="#">Mehr Anträge &raquo;</a>
+                        </p>
+                    {% else %}
+                        <p>Keine Anträge</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Neue Antworten
+                </div>
+                <div class="panel-body">
+                    {% if new_answers %}
+                        <ul>
+                            {% for answer in new_answers %}
+                                <li><a href="{% url 'motion_detail' answer.id %}">{{ answer.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        <p class="text-right">
+                            <a href="#">Mehr Anträge &raquo;</a>
+                        </p>
+                    {% else %}
+                        <p>Keine Anträge</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Älte unbearbeitet Anträge
+                </div>
+                <div class="panel-body">
+                    {% if old_no_answer %}
+                        <ul>
+                            {% for answer in old_no_answer %}
+                                <li><a href="{% url 'motion_detail' answer.id %}">{{ answer.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        <p class="text-right">
+                            <a href="/motions/">Mehr Anträge &raquo;</a>
+                        </p>
+                    {% else %}
+                        <p>Keine Anträge</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Neueste Sitzungen
+                </div>
+                <div class="panel-body">
+                    {% if old_no_answer %}
+                        <ul>
+                            {% for answer in old_no_answer %}
+                                <li><a href="{% url 'motion_detail' answer.id %}">{{ answer.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        <p class="text-right">
+                            <a href="/motions/">Mehr Anträge &raquo;</a>
+                        </p>
+                    {% else %}
+                        <p>Keine Anträge</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Aktivste GemeinderätInnen
+                </div>
+                <div class="panel-body">
+                    {% if new_motions %}
+                        <ul>
+                            {% for motion in new_motions %}
+                                <li><a href="{% url 'motion_detail' motion.id %}">{{ motion.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        <p class="text-right">
+                            <a href="#">Mehr Anträge &raquo;</a>
+                        </p>
+                    {% else %}
+                        <p>Keine Anträge</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Aktivste Fraktionen pro GemeinderätIn
+                </div>
+                <div class="panel-body">
+                    {% if new_answers %}
+                        <ul>
+                            {% for answer in new_answers %}
+                                <li><a href="{% url 'motion_detail' answer.id %}">{{ answer.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        <p class="text-right">
+                            <a href="#">Mehr Anträge &raquo;</a>
+                        </p>
+                    {% else %}
+                        <p>Keine Anträge</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

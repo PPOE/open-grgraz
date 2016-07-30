@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block body_block %}
+    {% if groups %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fraktion</th>
+                    <th>Fraktionsstärke</th>
+                    <th># Anträge</th>
+                    <th># Anträge pro Fraktionsstärke</th>
+                    <th># Bearbeitet</th>
+                    <th>% Bearbeitet</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for line in groups %}
+            <tr>
+                <td><a href="">{{ line.parliamentary_group }}</a></td>
+                <td>...</td>
+                <td>{{ line.motion_count }}</td>
+                <td>...</td>
+                <td>{{ line.answered_count }}</td>
+                <td>{{ line.answered_percent }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Es gibt keine Fraktionen. :(</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block body_block %}
+    {% if council_persons %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Fraktion</th>
+                    <th># Anträge</th>
+                    <th># bearbeitet</th>
+                    <th>% bearbeitet</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for line in council_persons %}
+            <tr>
+                <td><a href="">{{ line.proposer }}</a></td>
+                <td>{{ line.parliamentary_group }}</td>
+                <td>{{ line.motion_count }}</td>
+                <td>{{ line.answered_count }}</td>
+                <td>{{ line.answered_percent }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Es gibt keine Fraktionen. :(</p>
+    {% endif %}
+{% endblock %}
