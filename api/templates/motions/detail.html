@@ -4,10 +4,10 @@
     <h2>{{ motion }}</h2>
 
     <div>
-        <p>Typ: <a href="/?type={{ motion.motion_type }}">{{ motion.motion_type }}</a></p>
-        <p>Sitzung: <a href="/?session={{ motion.session }}">{{ motion.session }}</a></p>
-        <p>Fraktion: <a href="/?group={{ motion.parliamentary_group }}">{{ motion.parliamentary_group }}</a></p>
-        <p>AntragsstellerIn: <a href="/?proposer={{ motion.proposer.name }}">{{ motion.proposer }}</a></p>
+        <p>Typ: <a href="{% url 'motions_list' %}?type={{ motion.motion_type | urlencode }}">{{ motion.motion_type }}</a></p>
+        <p>Sitzung: <a href="{% url 'motions_list' %}?session={{ motion.session | urlencode }}">{{ motion.session }}</a></p>
+        <p>Fraktion: <a href="{% url 'motions_list' %}?group={{ motion.parliamentary_group.id | urlencode }}">{{ motion.parliamentary_group }}</a></p>
+        <p>AntragsstellerIn: <a href="{% url 'motions_list' %}?proposer={{ motion.proposer.name | urlencode }}">{{ motion.proposer }}</a></p>
         <p>Dateien: {{ motion.files }}</p>
         <p>Beantwortet: {{ motion.answered }}</p>
     </div>

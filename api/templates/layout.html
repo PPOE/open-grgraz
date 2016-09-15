@@ -13,17 +13,17 @@
     <body>
         <div class="container">
             <header>
-                <h1>Open Gemeinderat Graz</h1>
+                <h1><a href="{% url 'index' %}">Open Gemeinderat Graz</a></h1>
                 <span>
                     Eine Initiative der <a href="https://steiermark.piratenpartei.at">
                     Piratenpartei Steiermark</a>.
                 </span>
+                <ul class="nav nav-pills">
+                    <li role="presentation"><a href="{% url 'index' %}">Home</a></li>
+                    <li role="presentation"><a href="{% url 'motions_list' %}">Anträge</a></li>
+                    {# <li role="presentation"><a href="{% url 'motion_stats' %}">Stats</a></li> #}
+                </ul>
             </header>
-            <ul class="nav nav-pills">
-                <li role="presentation" class="active"><a href="/">Home</a></li>
-                <li role="presentation"><a href="/motions/">List</a></li>
-                <li role="presentation"><a href="/stats/">Stats</a></li>
-            </ul>
 
 
             {% block body_block %}{% endblock %}
