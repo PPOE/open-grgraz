@@ -1,2 +1,4 @@
 django==1.10
-djangorestframework>3
+djangorestframework==3.4.6
+django-filter==0.9.2
+markdown==2.1.0
