@@ -15,7 +15,3 @@ RUN apt-get update && apt-get install -y \
 		postgresql-client libpq-dev \
 		sqlite3 \
 	--no-install-recommends && rm -rf /var/lib/apt/lists/*
-
-RUN python manage.py migrate
-RUN python manage.py initadmin
-#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
