@@ -45,7 +45,7 @@ class Answer(models.Model):
     title = models.CharField(max_length=1000)
     parliamentary_group = models.ForeignKey(ParliamentaryGroup)
     proposer = models.ForeignKey(CouncilPerson)
-    files = models.ManyToManyField(File)
+    files = models.ManyToManyField(File, blank=True)
 
     def __str__(self):
         return self.title
@@ -60,7 +60,7 @@ class Motion(models.Model):
     parliamentary_group = models.ForeignKey(ParliamentaryGroup)
     proposer = models.ForeignKey(CouncilPerson)
     files = models.ManyToManyField(File)
-    answers = models.ManyToManyField(Answer, null=True, blank=True)
+    answers = models.ManyToManyField(Answer, blank=True)
 
     def answered(self):
         return self.answers.count() > 0
