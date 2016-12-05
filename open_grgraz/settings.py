@@ -135,3 +135,9 @@ ADMINS = [
         'petertheone@gmail.com',
     ),
 ]
+
+# Use the file local_settings.py to overwrite the defaults with your own settings
+try:
+    from open_grgraz.settings_local import *
+except ImportError:
+    pass
