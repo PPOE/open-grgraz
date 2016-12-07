@@ -42,6 +42,7 @@ class Command(BaseCommand):
         Command.extract_email_attachments(settings.RAW_MOTIONS_PATH, settings.MOTIONS_PATH, motions_csv)
 
         Command.load_answers_dates('answers_dates.csv')
+
         # todo:
         #  - fetch motions and answer lists
         #  - create pdfs out of word documents,
@@ -267,4 +268,4 @@ class Command(BaseCommand):
                 #print(row[1])
                 id = int(row[0])
                 date = datetime.datetime.strptime(row[1], '%d.%m.%Y')
-                models.Answer.objects.filter(id=id).update(answered_date=date)
+                models.Answer.objects.filter(id=id, answered_date__isnull=True).update(answered_date=date)
