@@ -136,6 +136,15 @@ ADMINS = [
     ),
 ]
 
+MAGISTRAT_BASE_URL = 'https://magistrat.graz.at'
+FILES_PATH = 'files/'
+MOTION_LISTS_PATH = FILES_PATH + 'motionLists/'
+ANSWER_LISTS_PATH = FILES_PATH + 'answerLists/'
+RAW_MOTIONS_PATH = FILES_PATH + 'motionsRaw/'
+RAW_ANSWERS_PATH = FILES_PATH + 'answersRaw/'
+MOTIONS_PATH = FILES_PATH + 'motions/'
+ANSWERS_PATH = FILES_PATH + 'answers/'
+
 # Use the file local_settings.py to overwrite the defaults with your own settings
 try:
     from open_grgraz.settings_local import *
