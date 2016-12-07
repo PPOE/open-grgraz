@@ -46,6 +46,7 @@ class Answer(models.Model):
     parliamentary_group = models.ForeignKey(ParliamentaryGroup)
     proposer = models.ForeignKey(CouncilPerson)
     files = models.ManyToManyField(File, blank=True)
+    answered_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.title

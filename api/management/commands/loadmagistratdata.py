@@ -41,6 +41,7 @@ class Command(BaseCommand):
         Command.extract_email_attachments(settings.RAW_ANSWERS_PATH, settings.ANSWERS_PATH, answers_csv)
         Command.extract_email_attachments(settings.RAW_MOTIONS_PATH, settings.MOTIONS_PATH, motions_csv)
 
+        Command.load_answers_dates('answers_dates.csv')
         # todo:
         #  - fetch motions and answer lists
         #  - create pdfs out of word documents,
@@ -251,3 +252,19 @@ class Command(BaseCommand):
                             file = open(attachment_path, 'wb')
                             file.write(data)
                             file.close()
+
+
+    @staticmethod
+    def load_answers_dates(csv_filename):
+        with open(settings.FILES_PATH + csv_filename, 'r') as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                if row[0] == 'Nummer':
+                    continue
+                if row[1] == '':
+                    continue
+                #print(row[0])
+                #print(row[1])
+                id = int(row[0])
+                date = datetime.datetime.strptime(row[1], '%d.%m.%Y')
+                models.Answer.objects.filter(id=id).update(answered_date=date)
