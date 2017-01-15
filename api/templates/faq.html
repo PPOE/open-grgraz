@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+
+{% block body_block %}
+    <div class="panel panel-default">
+        <div class="panel-heading">Wir wollen Transparenz für den Grazer Gemeinderat!</div>
+        <div class="panel-body">
+            Da es noch immer <a href="https://kamerascheu.at/">keinen Livestream</a> aus dem Grazer Gemeinderat gibt,
+            wollen wir für mehr Transparenz sorgen, und hier zumindest die Fragen, Anträge und Antworten der letzten
+            Gemeinderatsperiode für alle Interessierten zur Verfügung stellen. Unter
+            <a href="{% url 'motions_list' %}">Anträge</a> findest du alle Anträge, Anfragen und Antworten seit
+            28.02.2013,
+            wenn du dich über die Prozesse im Gemeinderat Graz informieren willst dann lies die
+            <a href="{% url 'faq' %}">oft gestellten Fragen</a> durch.
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <h3>Was ist die Fragestunde im Gemeinderat?</h3>
+            <p>
+                Bevor die Gemeinderatssitzung mit der Tagesordnung beginnt, gibt es eine 60-minütige Fragestunde. Hier
+                kann jeder Mandatar/jede Mandatarin eine Frage an ein Stadtsenatsmitglied stellen. Diese muss in der
+                Sitzung beantwortet werden. Die Frage muss zwei Tage vor der Gemeinderatssitzung schriftlich eingereicht
+                werden. In der Fragestunde kann nach der Antwort des Stadtsenatsmitgliedes eine Zusatzfrage gestellt
+                werden, die ebenso beantwortet werden muss.
+            </p>
+
+            <h3>Was sind dringliche Anträge?</h3>
+            <p>
+                Sogenannte dringliche Anträge werden nach der Tagesordnung behandelt. Zuerst wird über die Dringlichkeit
+                des gestellten Antrages diskutiert. Stimmt mehr als die Hälfte der GemeinderätInnen zu, wird erst über
+                den Inhalt des Antrags diskutiert und dann abgestimmt.
+                Gemeinderatsklubs (d.h. mind. 3 Mandate) dürfen pro Sitzung zwei dringliche Anträge einbringen,
+                Fraktionen ohne Klubstärke dürfen einen Antrag pro Sitzung einbringen.
+            </p>
+
+            <h3>Was ist ein selbständiger Antrag?</h3>
+            <p>
+                Dieser Antrag geht direkt nach der Abstimmung an die entsprechende Abteilung und die Dringlichkeit muss
+                nicht abgestimmt werden. Die Abteilung beantwortet diesen Antrag, setzt ihn um, oder begründet warum sie
+                ihn nicht umsetzt. Hier können die Parteien beliebig viele einbringen.
+            </p>
+
+            <h3>Was sind Zusatz- und Abänderungsanträge?</h3>
+            <p>
+                Dadurch können andere Anträge abgeändert oder ergänzt werden. Es können zu jedem dringlichen Antrag und
+                zu allen Anträgen, die von den jeweiligen Abteilungen der Stadt auf die Tagesordnung der
+                Gemeinderatssitzung gestellt wurden, beliebig viele Zusatz- und Abänderungsanträge von allen Parteien
+                gestellt werden.
+            </p>
+
+            <h3>Was sind Antworten auf Anträge?</h3>
+            <p>
+                Jeder Antrag  geht an eine Abteilung der Stadt und muss
+                von dieser bearbeitet bzw. Beantwortet werden.
+            </p>
+
+            <h3>Warum sind für manche Anträge/Anfragen noch keine Antworten verfügbar?</h3>
+            <p>
+                Auch die Mühlen des Grazer Gemeinderats mahlen manches Mal langsam. Deshalb sind für manche Anträge,
+                Anfragen noch keine Antworten verfügbar. Wir bemühen uns und werden die Antworten, sobald sie
+                veröffentlicht werden, auch hier eintragen.
+            </p>
+        </div>
+    </div>
+{% endblock %}

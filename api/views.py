@@ -10,12 +10,17 @@ from api.serializers import *
 
 
 def index(request):
-    new_motions = Motion.objects.order_by('-session', '-motion_id', '-id')[:3]
-    new_answers = Motion.objects.filter(answers__gt=0).order_by('-session', '-motion_id', '-id')[:3]  #todo
-    old_no_answer = Motion.objects.filter(answers__isnull=True).order_by('session', 'motion_id', 'id')[:3]
+    new_motions = Motion.objects.order_by('-session', '-motion_id', '-id')[:6]
+    new_answers = Motion.objects.filter(answers__gt=0).order_by('-session', '-motion_id', '-id')[:6]  #todo
+    old_no_answer = Motion.objects.filter(answers__isnull=True).order_by('session', 'motion_id', 'id')[:6]
 
     context = {'new_motions': new_motions, 'new_answers': new_answers, 'old_no_answer': old_no_answer}
     return render(request, 'index.html', context)
+
+
+def faq(request):
+    context = {}
+    return render(request, 'faq.html', context)
 
 
 def groups(request):
@@ -51,7 +56,7 @@ class MotionsList(generic.ListView):
     context_object_name = 'motions'
 
     def get_queryset(self):
-        queryset = Motion.objects.order_by('-session', '-motion_id', '-id')
+        queryset = Motion.objects.order_by('-session__session_date', '-motion_id', '-id')
         # todo: order_by, filter answered, pagination, search
         session = self.request.GET.get('session', None)
         type = self.request.GET.get('type', None)
@@ -65,7 +70,7 @@ class MotionsList(generic.ListView):
             queryset = queryset.filter(parliamentary_group__id=group)
         if proposer is not None:
             queryset = queryset.filter(proposer__name=proposer)
-        return queryset
+        return queryset[:50]
 
 
 def motion_detail(request, id):

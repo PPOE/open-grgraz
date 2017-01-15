@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^faq/$', views.faq, name='faq'),
     url(r'^motions/$', views.MotionsList.as_view(), name='motions_list'),
     url(r'^motions/(?P<id>[\d]+)/$', views.motion_detail, name='motion_detail'),
     #url(r'^groups/$', views.groups, name='groups_list'),
