@@ -4,6 +4,31 @@
 
 {% block body_block %}
     {% if motions %}
+        <nav class="text-center" aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="{% if not motions.has_previous %}disabled{% endif %}">
+                    <a href="{% if motions.has_previous %}?session={{ request.GET.session }}&type={{ request.GET.type }}&group={{ request.GET.group }}&proposer={{ request.GET.proposer }}&page={{ motions.previous_page_number }}{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% for page in motions.paginator.page_range %}
+                <li class="{% if motions.number == page %}active{% endif %}"><a href="?session={{ request.GET.session }}&type={{ request.GET.type }}&group={{ request.GET.group }}&proposer={{ request.GET.proposer }}&page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li class="{% if not motions.has_next %}disabled{% endif %}">
+                    <a href="{% if motions.has_next %}?session={{ request.GET.session }}&type={{ request.GET.type }}&group={{ request.GET.group }}&proposer={{ request.GET.proposer }}&page={{ motions.next_page_number }}{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+            <p>
+                Filter:
+                Sitzung: {% if request.GET.session %}{{ request.GET.session }}{% else %}alle{% endif %},
+                Antrags Typ: {% if request.GET.type %}{{ request.GET.type }}{% else %}alle{% endif %},
+                Fraktion: {% if request.GET.group %}{{ request.GET.group }}{% else %}alle{% endif %},
+                AntragsstellerIn: {% if request.GET.proposer %}{{ request.GET.proposer }}{% else %}alle{% endif %},
+                Filter <a href="{% url 'motions_list' %}">zurücksetzen</a>.
+            </p>
+        </nav>
         <table class="table">
             <thead>
                 <tr>
@@ -30,18 +55,18 @@
             {% endfor %}
             </tbody>
         </table>
-        <nav aria-label="Page navigation">
+        <nav class="text-center" aria-label="Page navigation">
             <ul class="pagination">
-                <li class="disabled">
-                    <a href="#" aria-label="Previous">
+                <li class="{% if not motions.has_previous %}disabled{% endif %}">
+                    <a href="{% if motions.has_previous %}?session={{ request.GET.session }}&type={{ request.GET.type }}&group={{ request.GET.group }}&proposer={{ request.GET.proposer }}&page={{ motions.previous_page_number }}{% endif %}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="active"><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li>
-                    <a href="#" aria-label="Next>
+                {% for page in motions.paginator.page_range %}
+                <li class="{% if motions.number == page %}active{% endif %}"><a href="?session={{ request.GET.session }}&type={{ request.GET.type }}&group={{ request.GET.group }}&proposer={{ request.GET.proposer }}&page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li class="{% if not motions.has_next %}disabled{% endif %}">
+                    <a href="{% if motions.has_next %}?session={{ request.GET.session }}&type={{ request.GET.type }}&group={{ request.GET.group }}&proposer={{ request.GET.proposer }}&page={{ motions.next_page_number }}{% endif %}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

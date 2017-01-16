@@ -26,7 +26,7 @@
                             {% endfor %}
                         </ul>
                         <p class="text-right">
-                            <a href="{% url 'motions_list' %}">Mehr Anträge &raquo;</a>
+                            <a href="{% url 'motions_list' %}">Alle Anträge &raquo;</a>
                         </p>
                     {% else %}
                         <p>Keine Anträge</p>
@@ -37,7 +37,7 @@
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Neue Antworten
+                    Neueste Antworten
                 </div>
                 <div class="panel-body">
                     {% if new_answers %}
@@ -47,7 +47,7 @@
                             {% endfor %}
                         </ul>
                         <p class="text-right">
-                            <a href="{% url 'motions_list' %}">Mehr Anträge &raquo;</a>
+                            <a href="{% url 'motions_list' %}">Alle Anträge &raquo;</a>
                         </p>
                     {% else %}
                         <p>Keine Anträge</p>
@@ -58,7 +58,7 @@
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Alte unbearbeitete Anträge
+                    Älteste unbearbeitete Anträge
                 </div>
                 <div class="panel-body">
                     {% if old_no_answer %}
@@ -68,7 +68,7 @@
                             {% endfor %}
                         </ul>
                         <p class="text-right">
-                            <a href="{% url 'motions_list' %}">Mehr Anträge &raquo;</a>
+                            <a href="{% url 'motions_list' %}">Alle Anträge &raquo;</a>
                         </p>
                     {% else %}
                         <p>Keine Anträge</p>

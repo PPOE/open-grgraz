@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.views import generic
 from django.db.models import Count
@@ -10,9 +11,9 @@ from api.serializers import *
 
 
 def index(request):
-    new_motions = Motion.objects.order_by('-session', '-motion_id', '-id')[:6]
-    new_answers = Motion.objects.filter(answers__gt=0).order_by('-session', '-motion_id', '-id')[:6]  #todo
-    old_no_answer = Motion.objects.filter(answers__isnull=True).order_by('session', 'motion_id', 'id')[:6]
+    new_motions = Motion.objects.order_by('-session__session_date', '-motion_id', '-id')[:6]
+    new_answers = Motion.objects.filter(answers__gt=0).order_by('-session__session_date', '-motion_id', '-id')[:6]  #todo
+    old_no_answer = Motion.objects.filter(answers__isnull=True).order_by('session__session_date', 'motion_id', 'id')[:6]
 
     context = {'new_motions': new_motions, 'new_answers': new_answers, 'old_no_answer': old_no_answer}
     return render(request, 'index.html', context)
@@ -62,15 +63,27 @@ class MotionsList(generic.ListView):
         type = self.request.GET.get('type', None)
         group = self.request.GET.get('group', None)
         proposer = self.request.GET.get('proposer', None)
-        if session is not None:
+        if session is not None and session is not '':
             queryset = queryset.filter(session__session_date=session)
-        if type is not None:
+        if type is not None and type is not '':
             queryset = queryset.filter(motion_type=type)
-        if group is not None:
+        if group is not None and group is not '':
             queryset = queryset.filter(parliamentary_group__id=group)
-        if proposer is not None:
+        if proposer is not None and proposer is not '':
             queryset = queryset.filter(proposer__name=proposer)
-        return queryset[:50]
+
+        paginator = Paginator(queryset, 100)
+        page = self.request.GET.get('page')
+        try:
+            motions = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            motions = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            motions = paginator.page(paginator.num_pages)
+
+        return motions
 
 
 def motion_detail(request, id):
