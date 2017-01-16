@@ -1,14 +1,67 @@
 {% extends 'layout.html' %}
 
 {% block body_block %}
-    <h2>{{ motion }}</h2>
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ motion }}</div>
+        <div class="panel-body">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Typ</th>
+                        <td><a href="{% url 'motions_list' %}?type={{ motion.motion_type | urlencode }}">{{ motion.motion_type }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>Sitzung</th>
+                        <td><a href="{% url 'motions_list' %}?session={{ motion.session | urlencode }}">{{ motion.session }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>Fraktion</th>
+                        <td><a href="{% url 'motions_list' %}?group={{ motion.parliamentary_group.id | urlencode }}">{{ motion.parliamentary_group }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>AntragsstellerIn</th>
+                        <td><a href="{% url 'motions_list' %}?proposer={{ motion.proposer.name | urlencode }}">{{ motion.proposer }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>Antrag Datei</th>
+                        <td>
+                            <ul>
+                                {% for file in motion.files.all %}
+                                <li><a href="/{{ file.path }}">{{ file.long_filename }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-    <div>
-        <p>Typ: <a href="{% url 'motions_list' %}?type={{ motion.motion_type | urlencode }}">{{ motion.motion_type }}</a></p>
-        <p>Sitzung: <a href="{% url 'motions_list' %}?session={{ motion.session | urlencode }}">{{ motion.session }}</a></p>
-        <p>Fraktion: <a href="{% url 'motions_list' %}?group={{ motion.parliamentary_group.id | urlencode }}">{{ motion.parliamentary_group }}</a></p>
-        <p>AntragsstellerIn: <a href="{% url 'motions_list' %}?proposer={{ motion.proposer.name | urlencode }}">{{ motion.proposer }}</a></p>
-        <p>Dateien: {{ motion.files }}</p>
-        <p>Beantwortet: {{ motion.answered }}</p>
+            <h3>Antworten</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Titel</th>
+                        <th>Datum</th>
+                        <th>Dauer</th>
+                        <th>Files</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for answer in motion.answers.all %}
+                    <tr>
+                        <td>{{ answer }}</td>
+                        <td>{{ answer.answered_date }}</td>
+                        <td>{{ motion.session.session_date|timesince:answer.answered_date }}</td>
+                        <td>
+                            <ul>
+                                {% for file in answer.files.all %}
+                                <li><a href="/{{ file.path }}">{{ file.long_filename }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}

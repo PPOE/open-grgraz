@@ -1,11 +1,14 @@
 from django.conf.urls import url
 from . import views
+from open_grgraz import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^faq/$', views.faq, name='faq'),
     url(r'^motions/$', views.MotionsList.as_view(), name='motions_list'),
     url(r'^motions/(?P<id>[\d]+)/$', views.motion_detail, name='motion_detail'),
+
     #url(r'^groups/$', views.groups, name='groups_list'),
     #url(r'^persons/$', views.council_persons, name='persons_list'),
     #url(r'^stats/$', views.motion_stats, name='motion_stats'),
@@ -19,4 +22,4 @@ urlpatterns = [
     #url(r'^api/v0/files/$', views.ApiFileList.as_view(), name='files'),
     #url(r'^api/v0/motions/$', views.ApiMotionList.as_view(), name='motions'),
     #url(r'^api/v0/answers/$', views.ApiAnswerList.as_view(), name='answers'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -35,8 +35,13 @@ class Command(BaseCommand):
 
         Command.copy_files(settings.RAW_ANSWERS_PATH, settings.ANSWERS_PATH, '*.pdf')
         Command.copy_files(settings.RAW_MOTIONS_PATH, settings.MOTIONS_PATH, '*.pdf')
+        Command.copy_files(settings.RAW_ANSWERS_PATH, settings.ANSWERS_PATH, '*.doc')
+        Command.copy_files(settings.RAW_MOTIONS_PATH, settings.MOTIONS_PATH, '*.doc')
+        Command.copy_files(settings.RAW_ANSWERS_PATH, settings.ANSWERS_PATH, '*.docx')
+        Command.copy_files(settings.RAW_MOTIONS_PATH, settings.MOTIONS_PATH, '*.docx')
 
-        Command.convert_documents(motions_csv)
+        Command.convert_documents(answers_csv)  # this does nothing for now.
+        Command.convert_documents(motions_csv)  # this does nothing for now.
 
         Command.extract_email_attachments(settings.RAW_ANSWERS_PATH, settings.ANSWERS_PATH, answers_csv)
         Command.extract_email_attachments(settings.RAW_MOTIONS_PATH, settings.MOTIONS_PATH, motions_csv)
@@ -102,14 +107,24 @@ class Command(BaseCommand):
                 #print(person)
 
                 #todo: files?
-
                 motion_type = element['Dokumentenart']['Label']
+                if motion_type == 'GR-Antwort':
+                    download_path = 'files/answers/'
+                else:
+                    download_path = 'files/motions/'
+                file = models.File.objects.update_or_create(long_filename=element['FileLeafRef'], defaults={'short_filename': element['FileLeafRef'],
+                                                                                                            'path': download_path + element['FileLeafRef']})[0]
+                #print(file)
+
+
                 motion_id = int(float(element['FileLeafRef'][:4].replace('_', '')))
                 #print(motion_id)
                 if motion_type == 'GR-Antwort':
                     answer = models.Answer.objects.update_or_create(id=element['ID'], defaults={'motion_id': motion_id,
                                                              'session': session, 'title': element['Title'],
                                                              'parliamentary_group': group, 'proposer': person})[0]
+                    answer.files.add(file)
+                    answer.save()
                     #print(answer)
                 else:
                     from django.core.exceptions import ObjectDoesNotExist
@@ -122,6 +137,7 @@ class Command(BaseCommand):
                                                              'motion_type': motion_type, 'parliamentary_group': group,
                                                              'proposer': person})[0]
                     motion.answers.set(answers)
+                    motion.files.add(file)
                     motion.save()
                     #print(motion)
 
@@ -193,6 +209,16 @@ class Command(BaseCommand):
             filename = motion[9]
             if filename.split('.')[-1] != 'msg':
                 continue
+
+            motion_or_answer = None
+            motion_type = motion[3]
+            if motion_type == 'GR-Antwort':
+                motion_or_answer = models.Answer.objects.get(id=motion[1])
+            else:
+                motion_or_answer = models.Motion.objects.get(id=motion[1])
+
+            old_file = models.File.objects.get(long_filename=filename).delete()
+
             file_path = read_base_path + filename
 
             ole = olefile.OleFileIO(file_path)
@@ -249,6 +275,11 @@ class Command(BaseCommand):
 
                     if attachment_filename is not None and data is not None:
                         attachment_path = write_base_path + dirname + '/' + attachment_filename
+                        fileModel = models.File.objects.update_or_create(long_filename=attachment_filename, defaults={'short_filename': attachment_filename,
+                                                                                                        'path': attachment_path})[0]
+                        #print(fileModel)
+                        motion_or_answer.files.add(fileModel)
+                        motion_or_answer.save()
                         if not os.path.exists(attachment_path):
                             file = open(attachment_path, 'wb')
                             file.write(data)
