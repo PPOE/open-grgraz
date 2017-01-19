@@ -64,6 +64,7 @@ class MotionsList(generic.ListView):
         type = self.request.GET.get('type', None)
         group = self.request.GET.get('group', None)
         proposer = self.request.GET.get('proposer', None)
+        search = self.request.GET.get('search', None)
         if session is not None and session is not '':
             queryset = queryset.filter(session__session_date=session)
         if type is not None and type is not '':
@@ -72,6 +73,8 @@ class MotionsList(generic.ListView):
             queryset = queryset.filter(parliamentary_group__id=group)
         if proposer is not None and proposer is not '':
             queryset = queryset.filter(proposer__name=proposer)
+        if search is not None and search is not '':
+            queryset = queryset.filter(title__contains=search)
 
         paginator = Paginator(queryset, 100)
         page = self.request.GET.get('page')
