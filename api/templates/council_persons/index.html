@@ -8,18 +8,18 @@
                     <th>Name</th>
                     <th>Fraktion</th>
                     <th># Anträge</th>
-                    <th># bearbeitet</th>
-                    <th>% bearbeitet</th>
+                    <th># Bearbeitet</th>
+                    <th>% Bearbeitet</th>
                 </tr>
             </thead>
             <tbody>
-            {% for line in council_persons %}
+            {% for person in council_persons %}
             <tr>
-                <td><a href="">{{ line.proposer }}</a></td>
-                <td>{{ line.parliamentary_group }}</td>
-                <td>{{ line.motion_count }}</td>
-                <td>{{ line.answered_count }}</td>
-                <td>{{ line.answered_percent }}</td>
+                <td><a href="{% url 'motions_list' %}?proposer={{ person.proposer__name | urlencode }}">{{ person.proposer__name }}</a></td>
+                <td>{{ person.parliamentary_group }}</td>
+                <td>{{ person.motion_count }}</td>
+                <td>{{ person.answered_count }}</td>
+                <td>{{ person.answered_percent }}</td>
             </tr>
             {% endfor %}
             </tbody>

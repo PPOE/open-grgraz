@@ -9,9 +9,9 @@ urlpatterns = [
     url(r'^motions/$', views.MotionsList.as_view(), name='motions_list'),
     url(r'^motions/(?P<id>[\d]+)/$', views.motion_detail, name='motion_detail'),
 
-    #url(r'^groups/$', views.groups, name='groups_list'),
-    #url(r'^persons/$', views.council_persons, name='persons_list'),
-    #url(r'^stats/$', views.motion_stats, name='motion_stats'),
+    url(r'^groups/$', views.groups, name='groups_list'),
+    url(r'^persons/$', views.council_persons, name='persons_list'),
+    url(r'^stats/$', views.motion_stats, name='motion_stats'),
 
 
     #url(r'^api/v0/$', views.api_index, name='api_index'),

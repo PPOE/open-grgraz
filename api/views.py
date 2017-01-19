@@ -25,11 +25,12 @@ def faq(request):
 
 
 def groups(request):
-    groups = Motion.objects.values('parliamentary_group')\
+    groups = Motion.objects.values('parliamentary_group', 'parliamentary_group__id', 'parliamentary_group__seats')\
         .annotate(motion_count=Count('id', distinct=True),
                   answered_count=Count('answers__motion_id', distinct=True))
 
     for group in groups:
+        group['motions_per_seat'] = float('{:.2f}'.format(group['answered_count'] / group['parliamentary_group__seats']))
         group['answered_percent'] = float('{:.2f}'.format((group['answered_count'] / group['motion_count']) * 100))
 
     groups = sorted(groups, key=lambda s: s['answered_percent'], reverse=True)
@@ -40,7 +41,7 @@ def groups(request):
 
 def council_persons(request):
     #todo: fix duplicates
-    council_persons = Motion.objects.values('proposer', 'parliamentary_group')\
+    council_persons = Motion.objects.values('proposer', 'proposer__name', 'parliamentary_group')\
         .annotate(motion_count=Count('id', distinct=True),
                   answered_count=Count('answers__motion_id', distinct=True))
 

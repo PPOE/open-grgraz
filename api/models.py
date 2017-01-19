@@ -6,6 +6,7 @@ from django.db import models
 class ParliamentaryGroup(models.Model):
     id = models.CharField(max_length=9, primary_key=True)
     name = models.CharField(max_length=200)
+    seats = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name

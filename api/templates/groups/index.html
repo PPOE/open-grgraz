@@ -6,9 +6,9 @@
             <thead>
                 <tr>
                     <th>Fraktion</th>
-                    <th>Fraktionsstärke</th>
+                    <th>Sitze</th>
                     <th># Anträge</th>
-                    <th># Anträge pro Fraktionsstärke</th>
+                    <th># Anträge pro Sitz</th>
                     <th># Bearbeitet</th>
                     <th>% Bearbeitet</th>
                 </tr>
@@ -16,10 +16,10 @@
             <tbody>
             {% for line in groups %}
             <tr>
-                <td><a href="">{{ line.parliamentary_group }}</a></td>
-                <td>...</td>
+                <td><a href="{% url 'motions_list' %}?group={{ line.parliamentary_group__id | urlencode }}">{{ line.parliamentary_group }}</a></td>
+                <td>{{ line.parliamentary_group__seats }}</td>
                 <td>{{ line.motion_count }}</td>
-                <td>...</td>
+                <td>{{ line.motions_per_seat }}</td>
                 <td>{{ line.answered_count }}</td>
                 <td>{{ line.answered_percent }}</td>
             </tr>
