@@ -74,7 +74,7 @@ class MotionsList(generic.ListView):
         if proposer is not None and proposer is not '':
             queryset = queryset.filter(proposer__name=proposer)
         if search is not None and search is not '':
-            queryset = queryset.filter(title__contains=search)
+            queryset = queryset.filter(title__icontains=search)
 
         paginator = Paginator(queryset, 100)
         page = self.request.GET.get('page')
