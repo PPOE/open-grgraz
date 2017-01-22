@@ -6,6 +6,8 @@ from django.db.models import Count
 from rest_framework import mixins, generics
 from api.models import *
 from api.serializers import *
+from datetime import datetime, timedelta
+import json
 
 # Create your views here.
 
@@ -106,17 +108,17 @@ def motion_detail(request, id):
 
 
 def motion_stats(request):
-    answered_stats = Motion.objects.values('parliamentary_group')\
-        .annotate(num_total=Count('id', distinct=True),
-                  num_answered=Count('answers__motion_id', distinct=True))\
-        .order_by('-num_total')
+    answered_stats = Motion.objects.filter(answers__answered_date__isnull=False).values('parliamentary_group', 'session__session_date', 'answers__answered_date')
+
+    time_sum = {'ÖVP': timedelta(), 'KPÖ': timedelta(), 'FPÖ': timedelta(), 'SPÖ': timedelta(), 'Grüne': timedelta(), 'Piraten': timedelta()}
+    motions_count = {'ÖVP': 0, 'KPÖ': 0, 'FPÖ': 0, 'SPÖ': 0, 'Grüne': 0, 'Piraten': 0}
 
     for stat in answered_stats:
-        stat['answered_percent'] = float('{:.2f}'.format((stat['num_answered'] / stat['num_total']) * 100))
+        stat['delta'] = stat['session__session_date'] - stat['answers__answered_date']
+        time_sum[stat['parliamentary_group']] = time_sum[stat['parliamentary_group']] + stat['delta']
+        motions_count[stat['parliamentary_group']] += 1
 
-    answered_stats = sorted(answered_stats, key=lambda s: s['answered_percent'], reverse=True)
-
-    return HttpResponse(answered_stats)
+    return HttpResponse(str(time_sum))
 
 
 def api_index(request):
