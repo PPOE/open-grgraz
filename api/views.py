@@ -30,7 +30,7 @@ def groups(request):
                   answered_count=Count('answers__motion_id', distinct=True))
 
     for group in groups:
-        group['motions_per_seat'] = float('{:.2f}'.format(group['answered_count'] / group['parliamentary_group__seats']))
+        group['motions_per_seat'] = float('{:.2f}'.format(group['motion_count'] / group['parliamentary_group__seats']))
         group['answered_percent'] = float('{:.2f}'.format((group['answered_count'] / group['motion_count']) * 100))
 
     groups = sorted(groups, key=lambda s: s['answered_percent'], reverse=True)
