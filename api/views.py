@@ -58,23 +58,33 @@ class MotionsList(generic.ListView):
     context_object_name = 'motions'
 
     def get_queryset(self):
-        queryset = Motion.objects.order_by('-session__session_date', '-motion_id', '-id')
-        # todo: order_by, filter answered, pagination, search
-        session = self.request.GET.get('session', None)
-        type = self.request.GET.get('type', None)
-        group = self.request.GET.get('group', None)
-        proposer = self.request.GET.get('proposer', None)
-        search = self.request.GET.get('search', None)
-        if session is not None and session is not '':
+        queryset = Motion.objects.annotate(num_answered=Count('answers__motion_id', distinct=True))
+        session = self.request.GET.get('session', '')
+        type = self.request.GET.get('type', '')
+        group = self.request.GET.get('group', '')
+        proposer = self.request.GET.get('proposer', '')
+        answered = self.request.GET.get('answered', '')
+        search = self.request.GET.get('search', '')
+        orderby = self.request.GET.get('orderby', '')
+        if session is not '':
             queryset = queryset.filter(session__session_date=session)
-        if type is not None and type is not '':
+        if type is not '':
             queryset = queryset.filter(motion_type=type)
-        if group is not None and group is not '':
+        if group is not '':
             queryset = queryset.filter(parliamentary_group__id=group)
-        if proposer is not None and proposer is not '':
+        if answered is not '':
+            if answered == 'True':
+                queryset = queryset.filter(num_answered__gt=0)
+            elif answered == 'False':
+                queryset = queryset.filter(num_answered__lt=1)
+        if proposer is not '':
             queryset = queryset.filter(proposer__name=proposer)
-        if search is not None and search is not '':
+        if search is not '':
             queryset = queryset.filter(title__icontains=search)
+        if orderby is not '':
+            queryset = queryset.order_by(orderby)
+        else:
+            queryset = queryset.order_by('-session__session_date', '-motion_id', '-id')
 
         paginator = Paginator(queryset, 100)
         page = self.request.GET.get('page')
