@@ -22,7 +22,7 @@
                     {% if new_motions %}
                         <ul>
                             {% for motion in new_motions %}
-                                <li><a href="{% url 'motion_detail' motion.id %}">{{ motion.title }}</a></li>
+                                <li><a href="{% url 'motion_detail' motion.motion_id %}">{{ motion.title }}</a></li>
                             {% endfor %}
                         </ul>
                         <p class="text-right">
@@ -43,7 +43,7 @@
                     {% if new_answers %}
                         <ul>
                             {% for answer in new_answers %}
-                                <li><a href="{% url 'motion_detail' answer.id %}">{{ answer.title }}</a></li>
+                                <li><a href="{% url 'motion_detail' answer.motion_id %}">{{ answer.title }}</a></li>
                             {% endfor %}
                         </ul>
                         <p class="text-right">
@@ -64,7 +64,7 @@
                     {% if old_no_answer %}
                         <ul>
                             {% for answer in old_no_answer %}
-                                <li><a href="{% url 'motion_detail' answer.id %}">{{ answer.title }}</a></li>
+                                <li><a href="{% url 'motion_detail' answer.motion_id %}">{{ answer.title }}</a></li>
                             {% endfor %}
                         </ul>
                         <p class="text-right">

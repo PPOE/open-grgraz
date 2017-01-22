@@ -102,13 +102,13 @@ class MotionsList(generic.ListView):
         return motions
 
 
-def motion_detail(request, id):
-    motion = get_object_or_404(Motion, id=id)
+def motion_detail(request, motion_id):
+    motion = get_object_or_404(Motion, motion_id=motion_id)
     return render(request, 'motions/detail.html', {'motion': motion})
 
 
 def motion_stats(request):
-    answered_stats = Motion.objects.filter(answers__answered_date__isnull=False).values('parliamentary_group', 'session__session_date', 'answers__answered_date')
+    answered_stats = Motion.objects.filter(answers__answered_date__isnull=False).values('motion_id', 'parliamentary_group', 'session__session_date', 'answers__answered_date')
 
     time_sum = {'ÖVP': timedelta(), 'KPÖ': timedelta(), 'FPÖ': timedelta(), 'SPÖ': timedelta(), 'Grüne': timedelta(), 'Piraten': timedelta()}
     motions_count = {'ÖVP': 0, 'KPÖ': 0, 'FPÖ': 0, 'SPÖ': 0, 'Grüne': 0, 'Piraten': 0}
@@ -118,7 +118,9 @@ def motion_stats(request):
         time_sum[stat['parliamentary_group']] = time_sum[stat['parliamentary_group']] + stat['delta']
         motions_count[stat['parliamentary_group']] += 1
 
-    return HttpResponse(str(time_sum))
+    answered_stats = sorted(answered_stats, key=lambda s: s['delta'], reverse=True)
+
+    return HttpResponse(answered_stats)
 
 
 def api_index(request):

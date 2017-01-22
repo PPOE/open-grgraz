@@ -57,7 +57,7 @@
                 <td><a href="{% url 'motions_list' %}?session={{ motion.session | urlencode }}">{{ motion.session }}</a></td>
                 <td><a href="{% url 'motions_list' %}?type={{ motion.motion_type | urlencode }}">{{ motion.motion_type }}</a></td>
                 <td><a href="{% url 'motions_list' %}?answered={{ motion.answered | urlencode }}">{% if motion.answered %}<span class="label label-success"><span class="glyphicon glyphicon-ok"></span> Ja</span>{% else %}<span class="label label-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Nein</span>{% endif %}</a></td>
-                <td class="title"><a href="{% url 'motion_detail' motion.id %}">{{ motion.title }}</a></td>
+                <td class="title"><a href="{% url 'motion_detail' motion.motion_id %}">{{ motion.title }}</a></td>
                 <td><a href="{% url 'motions_list' %}?group={{ motion.parliamentary_group.id | urlencode }}"><span class="partyName {{ motion.parliamentary_group.id | lower }}">{{ motion.parliamentary_group.id }}</span></a></td>
                 <td><a href="{% url 'motions_list' %}?proposer={{ motion.proposer.name | urlencode }}">{{ motion.proposer }}</a></td>
             </tr>
