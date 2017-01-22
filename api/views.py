@@ -12,7 +12,7 @@ from api.serializers import *
 
 def index(request):
     new_motions = Motion.objects.order_by('-session__session_date', '-motion_id', '-id')[:6]
-    new_answers = Motion.objects.filter(answers__gt=0).order_by('-session__session_date', '-motion_id', '-id')[:6]  #todo
+    new_answers = Motion.objects.filter(answers__gt=0).order_by('-answers__answered_date')[:6]  #todo
     old_no_answer = Motion.objects.filter(answers__isnull=True).order_by('session__session_date', 'motion_id', 'id')[:6]
 
     context = {'new_motions': new_motions, 'new_answers': new_answers, 'old_no_answer': old_no_answer}

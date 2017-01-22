@@ -47,7 +47,7 @@
                             {% endfor %}
                         </ul>
                         <p class="text-right">
-                            <a href="{% url 'motions_list' %}">Alle Anträge &raquo;</a>
+                            <a href="{% url 'motions_list' %}?answered=True&orderby=-answers__answered_date">Alle Anträge &raquo;</a>
                         </p>
                     {% else %}
                         <p>Keine Anträge</p>
@@ -58,7 +58,7 @@
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Älteste unbearbeitete Anträge
+                    Älteste unbeantwortete Anträge
                 </div>
                 <div class="panel-body">
                     {% if old_no_answer %}
@@ -68,7 +68,7 @@
                             {% endfor %}
                         </ul>
                         <p class="text-right">
-                            <a href="{% url 'motions_list' %}">Alle Anträge &raquo;</a>
+                            <a href="{% url 'motions_list' %}?answered=False&orderby=motion_id">Alle Anträge &raquo;</a>
                         </p>
                     {% else %}
                         <p>Keine Anträge</p>
