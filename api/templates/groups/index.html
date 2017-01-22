@@ -16,7 +16,7 @@
             <tbody>
             {% for line in groups %}
             <tr>
-                <td><a href="{% url 'motions_list' %}?group={{ line.parliamentary_group__id | urlencode }}">{{ line.parliamentary_group }}</a></td>
+                <td><a href="{% url 'motions_list' %}?group={{ line.parliamentary_group__id | urlencode }}"><span class="partyName {{ line.parliamentary_group__id | lower }}">{{ line.parliamentary_group }}</span></a></td>
                 <td>{{ line.parliamentary_group__seats }}</td>
                 <td>{{ line.motion_count }}</td>
                 <td>{{ line.motions_per_seat }}</td>

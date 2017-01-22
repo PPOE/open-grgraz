@@ -16,7 +16,7 @@
             {% for person in council_persons %}
             <tr>
                 <td><a href="{% url 'motions_list' %}?proposer={{ person.proposer__name | urlencode }}">{{ person.proposer__name }}</a></td>
-                <td>{{ person.parliamentary_group }}</td>
+                <td><span class="partyName {{ person.parliamentary_group | lower }}">{{ person.parliamentary_group }}</span></td>
                 <td>{{ person.motion_count }}</td>
                 <td>{{ person.answered_count }}</td>
                 <td>{{ person.answered_percent }}</td>

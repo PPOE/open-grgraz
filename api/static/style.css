@@ -13,3 +13,39 @@ table td.title {
 .panel {
     overflow-wrap: break-word;
 }
+
+.partyName {
+    padding: 2px;
+    line-height: 25px;
+    border-radius: 10%;
+}
+
+.övp {
+    color: #ffffff;
+    background-color: #000000;
+}
+
+.kpö {
+    color: #ffffff;
+    background-color: #aa0000;
+}
+
+.spö {
+    color: #ffffff;
+    background-color: #E31E2D;
+}
+
+.fpö {
+    color: #ffffff;
+    background-color: #205CA5;
+}
+
+.grüne {
+    color: #ffffff;
+    background-color: #51A51E;
+}
+
+.piraten {
+    color: #ffffff;
+    background-color: #6E17A1;
+}
